@@ -58,17 +58,6 @@ export default function HomePage() {
                         Book a Table
                     </Link>
 
-                    {/* Quick info */}
-                    <div className="mt-12 flex items-center justify-center gap-8 flex-wrap text-sm text-white/50">
-                        <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-carmelita-gold" />
-                            <span>Open daily · 11:30&nbsp;AM–10&nbsp;PM</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-carmelita-gold" />
-                            <span>Up to 20 guests</span>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Scroll hint */}

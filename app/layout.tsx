@@ -26,38 +26,34 @@ export default function RootLayout({
                 <main className="min-h-screen">{children}</main>
                 <footer className="bg-carmelita-dark text-white py-12 mt-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
+                                {/* Conect-R Logo */}
+                                <div className="mb-3 flex items-center gap-3">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                        src="/conect-r-logo.png"
+                                        alt="Conect R LLC"
+                                        className="h-8 w-auto brightness-0 invert opacity-80"
+                                    />
+                                </div>
                                 <h3 className="font-display text-xl font-bold text-carmelita-gold mb-3">
-                                    Tablereserve
+                                    Conect R LLC
                                 </h3>
                                 <p className="text-gray-400 text-sm leading-relaxed">
-                                    Authentic Mexican cuisine honoring the tradition of Abuela
-                                    Carmelita from Puebla. Every dish tells a story of love,
-                                    family, and rich flavors.
+                                    Tablereserve is a product of Conect R LLC — simple, beautiful
+                                    restaurant reservations.
                                 </p>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-3">Hours</h4>
-                                <div className="text-gray-400 text-sm space-y-1">
-                                    <p>Mon–Thu: 11:30 AM – 9:00 PM</p>
-                                    <p>Fri–Sat: 11:30 AM – 10:00 PM</p>
-                                    <p>Sunday: 12:00 PM – 8:30 PM</p>
-                                </div>
                             </div>
                             <div>
                                 <h4 className="font-semibold text-white mb-3">Contact</h4>
                                 <div className="text-gray-400 text-sm space-y-1">
-                                    <p>1234 Avenida de la Abuela</p>
-                                    <p>Puebla District, CA 90210</p>
-                                    <p className="mt-2">(555) 867-5309</p>
+                                    <p>For more information contact Conect R</p>
                                 </div>
                             </div>
                         </div>
                         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-                            <p>
-                                © {new Date().getFullYear()} Tablereserve · Carmelitas Mexican Restaurant. All rights reserved.
-                            </p>
+                            <p>© {new Date().getFullYear()} Conect R LLC · Tablereserve. All rights reserved.</p>
                         </div>
                     </div>
                 </footer>
