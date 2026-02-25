@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { format, addDays, isBefore, startOfToday } from "date-fns";
-import { DayPicker } from "react-day-picker";
+import { format, addDays } from "date-fns";
+import { Calendar } from "@/components/booking/Calendar";
 import {
     CalendarDays,
     Clock,
@@ -43,7 +43,8 @@ export function BookingForm({
         notes: "",
     });
 
-    const today = startOfToday();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const maxDate = addDays(today, 14);
 
     const canProceed = () => {
@@ -114,17 +115,12 @@ export function BookingForm({
                         <p className="text-sm text-gray-500 mb-4">
                             Select a date up to 14 days in advance
                         </p>
-                        <div className="flex justify-center">
-                            <DayPicker
-                                mode="single"
-                                selected={formData.date ?? undefined}
-                                onSelect={(date) => setFormData((p) => ({ ...p, date: date ?? null }))}
-                                defaultMonth={today}
-                                startMonth={today}
-                                endMonth={maxDate}
-                                disabled={(date) =>
-                                    isBefore(date, today) || isBefore(maxDate, date)
-                                }
+                        <div className="w-full">
+                            <Calendar
+                                selected={formData.date}
+                                onSelect={(date) => setFormData((p) => ({ ...p, date }))}
+                                minDate={today}
+                                maxDate={maxDate}
                             />
                         </div>
                         {formData.date && (
