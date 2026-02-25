@@ -58,6 +58,12 @@ export default function HomePage() {
                         Book a Table
                     </Link>
 
+                    {/* Guest capacity hint */}
+                    <p className="mt-4 text-white/40 text-sm flex items-center justify-center gap-1.5">
+                        <Users className="w-3.5 h-3.5" />
+                        Up to 20 guests
+                    </p>
+
                 </div>
 
                 {/* Scroll hint */}
