@@ -28,7 +28,7 @@ export default async function AdminPage() {
                                 Admin Dashboard
                             </h1>
                             <p className="text-gray-400 text-sm mt-0.5">
-                                Carmelitas Mexican Restaurant
+                                Tablereserve · Carmelitas Mexican Restaurant
                             </p>
                         </div>
                         <div className="text-right">

@@ -25,7 +25,7 @@ export function Header({ user, isAdmin }: HeaderProps) {
                             <UtensilsCrossed className="w-4 h-4 text-white" />
                         </div>
                         <span className="font-display text-xl font-bold text-carmelita-dark">
-                            Carmelitas
+                            Tablereserve
                         </span>
                     </Link>
 

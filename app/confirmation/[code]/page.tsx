@@ -50,9 +50,9 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
                             </div>
                             <div>
                                 <div className="text-white font-display font-bold text-lg leading-none">
-                                    Carmelitas
+                                    Tablereserve
                                 </div>
-                                <div className="text-gray-400 text-xs">Mexican Restaurant</div>
+                                <div className="text-gray-400 text-xs">Carmelitas · Mexican Restaurant</div>
                             </div>
                         </div>
                         <div className="text-right">

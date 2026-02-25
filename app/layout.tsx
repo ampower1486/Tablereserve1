@@ -3,12 +3,12 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 
 export const metadata: Metadata = {
-    title: "Carmelitas Mexican Restaurant | Authentic Cuisine from Puebla",
+    title: "Tablereserve | Carmelitas Mexican Restaurant",
     description:
         "Experience authentic Mexican cuisine honoring the tradition of Abuela Carmelita from Puebla. Book your table online for the best Mexican food experience.",
     keywords: "Mexican restaurant, authentic Mexican food, Puebla cuisine, restaurant reservation, Carmelitas",
     openGraph: {
-        title: "Carmelitas Mexican Restaurant",
+        title: "Tablereserve — Carmelitas Mexican Restaurant",
         description: "Authentic Mexican cuisine honoring the tradition of Abuela Carmelita from Puebla.",
         type: "website",
     },
@@ -29,7 +29,7 @@ export default function RootLayout({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div>
                                 <h3 className="font-display text-xl font-bold text-carmelita-gold mb-3">
-                                    Carmelitas
+                                    Tablereserve
                                 </h3>
                                 <p className="text-gray-400 text-sm leading-relaxed">
                                     Authentic Mexican cuisine honoring the tradition of Abuela
@@ -56,8 +56,7 @@ export default function RootLayout({
                         </div>
                         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
                             <p>
-                                © {new Date().getFullYear()} Carmelitas Mexican Restaurant. All
-                                rights reserved.
+                                © {new Date().getFullYear()} Tablereserve · Carmelitas Mexican Restaurant. All rights reserved.
                             </p>
                         </div>
                     </div>

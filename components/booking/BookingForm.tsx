@@ -77,10 +77,10 @@ export function BookingForm({
                         <div key={s} className="flex items-center">
                             <div
                                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${i < step
-                                        ? "bg-carmelita-red text-white"
-                                        : i === step
-                                            ? "bg-carmelita-dark text-white"
-                                            : "bg-gray-200 text-gray-500"
+                                    ? "bg-carmelita-red text-white"
+                                    : i === step
+                                        ? "bg-carmelita-dark text-white"
+                                        : "bg-gray-200 text-gray-500"
                                     }`}
                             >
                                 {i < step ? <Check className="w-4 h-4" /> : i + 1}
@@ -119,11 +119,12 @@ export function BookingForm({
                                 mode="single"
                                 selected={formData.date ?? undefined}
                                 onSelect={(date) => setFormData((p) => ({ ...p, date: date ?? null }))}
+                                defaultMonth={today}
+                                startMonth={today}
+                                endMonth={maxDate}
                                 disabled={(date) =>
                                     isBefore(date, today) || isBefore(maxDate, date)
                                 }
-                                fromDate={today}
-                                toDate={maxDate}
                             />
                         </div>
                         {formData.date && (
@@ -154,8 +155,8 @@ export function BookingForm({
                                         setFormData((p) => ({ ...p, timeSlot: slot }))
                                     }
                                     className={`py-2.5 px-3 rounded-xl text-sm font-medium border-2 transition-all ${formData.timeSlot === slot
-                                            ? "bg-carmelita-dark text-white border-carmelita-dark"
-                                            : "border-gray-200 text-gray-700 hover:border-carmelita-red hover:text-carmelita-red"
+                                        ? "bg-carmelita-dark text-white border-carmelita-dark"
+                                        : "border-gray-200 text-gray-700 hover:border-carmelita-red hover:text-carmelita-red"
                                         }`}
                                 >
                                     {slot}
