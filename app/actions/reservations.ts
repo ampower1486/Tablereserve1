@@ -141,6 +141,14 @@ export async function createReservation(
             const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
             if (accountSid && authToken && fromNumber) {
+                // Normalize to E.164 — Twilio requires +1XXXXXXXXXX for US numbers
+                const digits = formData.guestPhone.replace(/\D/g, "");
+                const toNumber = digits.startsWith("1") && digits.length === 11
+                    ? `+${digits}`
+                    : digits.length === 10
+                        ? `+1${digits}`
+                        : `+${digits}`; // already international
+
                 const contactLine = restaurantPhone
                     ? `\nQuestions? Call us at ${restaurantPhone}.`
                     : "";
@@ -155,7 +163,7 @@ export async function createReservation(
                     contactLine +
                     `\n\nSee you soon! — Tablereserve`;
 
-                await fetch(
+                const twilioRes = await fetch(
                     `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
                     {
                         method: "POST",
@@ -165,16 +173,24 @@ export async function createReservation(
                         },
                         body: new URLSearchParams({
                             From: fromNumber,
-                            To: formData.guestPhone,
+                            To: toNumber,
                             Body: body,
                         }),
                     }
                 );
+
+                if (!twilioRes.ok) {
+                    const errBody = await twilioRes.json();
+                    console.error("[SMS] Twilio error:", JSON.stringify(errBody));
+                } else {
+                    console.log("[SMS] Sent to", toNumber);
+                }
             }
-        } catch {
-            // Don't fail the reservation if SMS fails
+        } catch (e) {
+            console.error("[SMS] Exception:", e);
         }
     }
+
 
     // ── Send email confirmation via Resend ───────────────────────────────
     try {
