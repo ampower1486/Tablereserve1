@@ -16,6 +16,8 @@ export function Header({ user, isAdmin }: HeaderProps) {
     const [menuOpen, setMenuOpen] = useState(false);
     const pathname = usePathname();
 
+    const hideCenterLogo = pathname === "/" || pathname === "/login" || pathname === "/register" || pathname.startsWith("/book");
+
     return (
         <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,9 +47,11 @@ export function Header({ user, isAdmin }: HeaderProps) {
                     </div>
 
                     {/* Center Logo */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                        <Logo />
-                    </div>
+                    {!hideCenterLogo && (
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                            <Logo />
+                        </div>
+                    )}
 
                     {/* Right Side Auth */}
                     <div className="flex-1 flex items-center justify-end gap-3">
@@ -60,7 +64,7 @@ export function Header({ user, isAdmin }: HeaderProps) {
                         ) : (
                             <Link
                                 href="/login"
-                                className="text-sm font-medium text-carmelita-dark hover:text-carmelita-red transition-colors bg-carmelita-cream/50 hover:bg-carmelita-cream px-4 py-2 rounded-full hidden md:block"
+                                className="text-sm font-medium text-white hover:text-white transition-colors bg-carmelita-red hover:bg-red-700 px-5 py-2 rounded-full shadow border-2 border-transparent hover:border-red-800 hidden md:block"
                             >
                                 Sign In
                             </Link>
