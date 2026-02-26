@@ -197,8 +197,14 @@ function ReservationCard({
                     <div className="font-semibold text-sm text-carmelita-dark truncate">
                         {reservation.guest_name}
                     </div>
-                    <div className="text-xs text-gray-500 truncate">
-                        {reservation.guest_email}
+                    <div className="text-xs text-gray-500 truncate mt-0.5 space-x-2">
+                        <span>{reservation.guest_email}</span>
+                        {reservation.guest_phone && (
+                            <span className="inline-flex items-center gap-1 text-gray-500">
+                                <span>•</span>
+                                <span>{reservation.guest_phone}</span>
+                            </span>
+                        )}
                     </div>
                 </div>
 

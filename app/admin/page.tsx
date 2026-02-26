@@ -13,7 +13,7 @@ export default async function AdminPage() {
 
     // Get admin's profile and linked restaurant
     const profile = await getMyProfile();
-    if (!profile || profile.role !== "admin") redirect("/");
+    if (!profile || (profile.role !== "admin" && profile.role !== "super_admin")) redirect("/");
 
     // If restaurant-scoped, fetch that restaurant's name
     let restaurantName: string | null = null;
@@ -26,7 +26,7 @@ export default async function AdminPage() {
         restaurantName = restaurant?.name ?? null;
     }
 
-    const isSuperAdmin = !profile.restaurant_id;
+    const isSuperAdmin = profile.role === "super_admin";
 
     const [reservations, stats] = await Promise.all([
         getAllReservations(),
@@ -99,12 +99,14 @@ export default async function AdminPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <StatCard
-                        title="Total Reservations"
-                        value={stats.total}
-                        icon={<CalendarDays className="w-5 h-5" />}
-                        color="blue"
-                    />
+                    <Link href="/admin/calendar" className="block transition-transform hover:scale-[1.02]">
+                        <StatCard
+                            title="Total Reservations"
+                            value={stats.total}
+                            icon={<CalendarDays className="w-5 h-5" />}
+                            color="blue"
+                        />
+                    </Link>
                     <StatCard
                         title="Confirmed"
                         value={stats.confirmed}
