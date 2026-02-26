@@ -1,12 +1,32 @@
-import { getAllReservations, getAdminStats } from "@/app/actions/admin";
+import { getAllReservations, getAdminStats, getMyProfile } from "@/app/actions/admin";
 import { ReservationTable } from "@/components/admin/ReservationTable";
 import { createClient } from "@/lib/supabase/server";
-import { CalendarDays, Users, CheckCircle, TrendingUp, Store } from "lucide-react";
+import { CalendarDays, Users, CheckCircle, TrendingUp, Store, UserCog } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 
 export default async function AdminPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/login");
+
+    // Get admin's profile and linked restaurant
+    const profile = await getMyProfile();
+    if (!profile || profile.role !== "admin") redirect("/");
+
+    // If restaurant-scoped, fetch that restaurant's name
+    let restaurantName: string | null = null;
+    if (profile.restaurant_id) {
+        const { data: restaurant } = await supabase
+            .from("restaurants")
+            .select("name")
+            .eq("id", profile.restaurant_id)
+            .single();
+        restaurantName = restaurant?.name ?? null;
+    }
+
+    const isSuperAdmin = !profile.restaurant_id;
 
     const [reservations, stats] = await Promise.all([
         getAllReservations(),
@@ -26,23 +46,37 @@ export default async function AdminPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="font-display text-2xl font-bold">
-                                Admin Dashboard
+                                {restaurantName ? `${restaurantName}` : "Admin Dashboard"}
                             </h1>
                             <p className="text-gray-400 text-sm mt-0.5">
-                                Tablereserve · Carmelitas Mexican Restaurant
+                                {isSuperAdmin
+                                    ? "Tablereserve · All restaurants"
+                                    : `Tablereserve · ${restaurantName}`}
                             </p>
                         </div>
                         <div className="text-right">
                             <div className="text-sm text-gray-400">Logged in as</div>
                             <div className="text-sm font-medium">{user?.email}</div>
-                            <div className="flex items-center justify-end gap-3 mt-2">
-                                <Link
-                                    href="/admin/restaurants"
-                                    className="inline-flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors"
-                                >
-                                    <Store className="w-3.5 h-3.5" />
-                                    Restaurants
-                                </Link>
+                            <div className="flex items-center justify-end gap-2 mt-2 flex-wrap">
+                                {/* Super admin only nav links */}
+                                {isSuperAdmin && (
+                                    <>
+                                        <Link
+                                            href="/admin/restaurants"
+                                            className="inline-flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors"
+                                        >
+                                            <Store className="w-3.5 h-3.5" />
+                                            Restaurants
+                                        </Link>
+                                        <Link
+                                            href="/admin/users"
+                                            className="inline-flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors"
+                                        >
+                                            <UserCog className="w-3.5 h-3.5" />
+                                            Admin Users
+                                        </Link>
+                                    </>
+                                )}
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                                     <span className="text-xs text-green-400">Live</span>
@@ -86,7 +120,7 @@ export default async function AdminPage() {
                 <div className="card p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="font-display text-xl font-bold text-carmelita-dark">
-                            Reservations
+                            {restaurantName ? `${restaurantName} Reservations` : "All Reservations"}
                         </h2>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
