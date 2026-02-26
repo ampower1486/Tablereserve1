@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
             body: new URLSearchParams({
                 From: fromNumber,
                 To: toNumber,
-                Body: "✅ Test message from Tablereserve! Your SMS notifications are working.",
+                Body: "Tablereserve: Test message successful!",
             }),
         }
     );

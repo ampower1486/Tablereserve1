@@ -149,19 +149,11 @@ export async function createReservation(
                         ? `+1${digits}`
                         : `+${digits}`; // already international
 
-                const contactLine = restaurantPhone
-                    ? `\nQuestions? Call us at ${restaurantPhone}.`
-                    : "";
-
                 const body =
-                    `✅ Reservation Confirmed!\n\n` +
-                    `Hi ${formData.guestName}, you're all set at ${restaurantName}.\n\n` +
-                    `📅 ${reservationDate}\n` +
-                    `🕐 ${formData.timeSlot}\n` +
-                    `👥 ${formData.partySize} guest${formData.partySize !== 1 ? "s" : ""}\n` +
-                    `🔖 Code: ${code}` +
-                    contactLine +
-                    `\n\nSee you soon! — Tablereserve`;
+                    `Tablereserve: You're set at ${restaurantName}!\n` +
+                    `${reservationDate} @ ${formData.timeSlot}\n` +
+                    `${formData.partySize} guests\n` +
+                    `Code: ${code}`;
 
                 const twilioRes = await fetch(
                     `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
