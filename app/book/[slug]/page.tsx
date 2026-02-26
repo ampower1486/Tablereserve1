@@ -3,6 +3,7 @@ import { BookingForm } from "@/components/booking/BookingForm";
 import { CalendarDays } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { Logo } from "@/components/ui/Logo";
 
 interface BookSlugPageProps {
     params: Promise<{ slug: string }>;
@@ -30,12 +31,8 @@ export default async function BookSlugPage({ params }: BookSlugPageProps) {
         <div className="min-h-screen bg-gradient-to-b from-carmelita-cream to-white py-12 px-4 sm:px-6 lg:px-8">
             {/* Page header */}
             <div className="text-center mb-10 animate-slide-up flex flex-col items-center">
-                <div className="mb-6 flex justify-center w-full">
-                    <img
-                        src="/logo.png"
-                        alt="Tablereserve"
-                        className="h-14 md:h-16 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
-                    />
+                <div className="mb-8 flex justify-center w-full transform scale-[0.80] sm:scale-95">
+                    <Logo />
                 </div>
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-carmelita-dark mb-2">
                     Reserve Your Table

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays, Clock, Users } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 export default function HomePage() {
     return (
@@ -26,12 +27,8 @@ export default function HomePage() {
                 <div className="relative z-10 text-center px-6 max-w-3xl mx-auto animate-fade-in">
                     {/* Logo mark */}
                     <div className="mb-8 flex justify-center w-full">
-                        <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-2xl">
-                            <img
-                                src="/logo.png"
-                                alt="Tablereserve"
-                                className="h-16 sm:h-20 w-auto object-contain pointer-events-none select-none"
-                            />
+                        <div className="bg-white/95 backdrop-blur-md px-10 py-6 rounded-[2rem] shadow-2xl transform scale-90 sm:scale-110">
+                            <Logo />
                         </div>
                     </div>
 

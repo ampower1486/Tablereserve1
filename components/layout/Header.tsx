@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, UtensilsCrossed } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
+import { Logo } from "@/components/ui/Logo";
 
 interface HeaderProps {
     user?: { email?: string } | null;
@@ -44,15 +45,8 @@ export function Header({ user, isAdmin }: HeaderProps) {
                     </div>
 
                     {/* Center Logo */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        {/* Make logo massive and UNCLICKABLE as requested */}
-                        <div className="flex items-center justify-center">
-                            <img
-                                src="/logo.png"
-                                alt="Tablereserve"
-                                className="h-16 md:h-24 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
-                            />
-                        </div>
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                        <Logo />
                     </div>
 
                     {/* Right Side Auth */}

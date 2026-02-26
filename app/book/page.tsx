@@ -1,6 +1,7 @@
 import { getRestaurants } from "@/app/actions/restaurants";
 import Link from "next/link";
-import { CalendarDays, MapPin, Phone, ArrowRight } from "lucide-react";
+import { MapPin, Phone, ArrowRight } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 export default async function BookPage() {
     const restaurants = await getRestaurants();
@@ -10,12 +11,8 @@ export default async function BookPage() {
             <div className="max-w-2xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12 animate-slide-up flex flex-col items-center">
-                    <div className="mb-6 flex justify-center w-full">
-                        <img
-                            src="/logo.png"
-                            alt="Tablereserve"
-                            className="h-16 md:h-20 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
-                        />
+                    <div className="mb-8 flex justify-center w-full transform scale-[0.85] md:scale-100">
+                        <Logo />
                     </div>
                     <h1 className="font-display text-4xl font-bold text-carmelita-dark mb-2">
                         Choose a Restaurant

@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { UtensilsCrossed, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { signUp } from "@/app/actions/auth";
+import { Logo } from "@/components/ui/Logo";
 
 export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
@@ -34,15 +35,11 @@ export default function RegisterPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-carmelita-cream to-white flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-md animate-slide-up">
-                <div className="text-center mb-8 flex flex-col items-center">
-                    <div className="mb-6 flex justify-center w-full">
-                        <img
-                            src="/logo.png"
-                            alt="Tablereserve"
-                            className="h-16 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
-                        />
+                <div className="text-center mb-10 flex flex-col items-center">
+                    <div className="mb-6 flex justify-center w-full transform scale-[0.85] md:scale-95">
+                        <Logo />
                     </div>
-                    <p className="text-gray-500 mt-1">Join us for a great experience</p>
+                    <p className="text-gray-500 mt-2">Join us for a great experience</p>
                 </div>
 
                 <div className="card p-8">
