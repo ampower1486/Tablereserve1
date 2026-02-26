@@ -29,40 +29,45 @@ export default function ResetPasswordPage() {
     useEffect(() => {
         const supabase = getSupabase();
 
-        // Supabase PKCE flow: ?code=... in query string
-        const code = new URLSearchParams(window.location.search).get("code");
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            // If we have a session, we're already authenticated (from /auth/callback)
+            if (session) {
+                setStatus("ready");
+                return;
+            }
 
-        // Supabase implicit flow: #access_token=...&type=recovery in hash
-        const hashParams = new URLSearchParams(window.location.hash.slice(1));
-        const accessToken = hashParams.get("access_token");
-        const type = hashParams.get("type");
+            // Fallback for implicit flow or direct links without callback
+            const code = new URLSearchParams(window.location.search).get("code");
+            const hashParams = new URLSearchParams(window.location.hash.slice(1));
+            const accessToken = hashParams.get("access_token");
+            const type = hashParams.get("type");
 
-        if (code) {
-            supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
-                if (error) {
-                    setTokenError("This reset link has expired or already been used. Please request a new one.");
-                    setStatus("error");
-                } else {
-                    setStatus("ready");
-                }
-            });
-        } else if (accessToken && type === "recovery") {
-            // Implicit flow — set the session from the hash tokens
-            supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: hashParams.get("refresh_token") ?? "",
-            }).then(({ error }) => {
-                if (error) {
-                    setTokenError("This reset link has expired. Please request a new one.");
-                    setStatus("error");
-                } else {
-                    setStatus("ready");
-                }
-            });
-        } else {
-            setTokenError("No reset token found. Please request a password reset email again.");
-            setStatus("error");
-        }
+            if (code) {
+                supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+                    if (error) {
+                        setTokenError("This reset link has expired or already been used. Please request a new one.");
+                        setStatus("error");
+                    } else {
+                        setStatus("ready");
+                    }
+                });
+            } else if (accessToken && type === "recovery") {
+                supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: hashParams.get("refresh_token") ?? "",
+                }).then(({ error }) => {
+                    if (error) {
+                        setTokenError("This reset link has expired. Please request a new one.");
+                        setStatus("error");
+                    } else {
+                        setStatus("ready");
+                    }
+                });
+            } else {
+                setTokenError("No active session or reset token found. Please request a new password reset email.");
+                setStatus("error");
+            }
+        });
     }, []);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -188,8 +193,8 @@ export default function ResetPasswordPage() {
                             <div className="flex gap-1">
                                 {[...Array(4)].map((_, i) => (
                                     <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i < Math.min(4, Math.floor(password.length / 3))
-                                            ? password.length < 6 ? "bg-red-400" : password.length < 10 ? "bg-yellow-400" : "bg-green-400"
-                                            : "bg-gray-100"
+                                        ? password.length < 6 ? "bg-red-400" : password.length < 10 ? "bg-yellow-400" : "bg-green-400"
+                                        : "bg-gray-100"
                                         }`} />
                                 ))}
                             </div>
