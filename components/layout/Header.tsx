@@ -45,13 +45,13 @@ export function Header({ user, isAdmin }: HeaderProps) {
 
                     {/* Center Logo */}
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <Link href="/" className="block hover:opacity-90 transition-opacity">
-                            {/* Make logo massive as requested */}
-                            <img
-                                src="/logo.png"
-                                alt="Tablereserve"
-                                className="h-[72px] md:h-[96px] w-auto object-contain drop-shadow-sm"
-                            />
+                        <Link href="/" className="flex items-center gap-4 group hover:opacity-90 transition-opacity">
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-carmelita-red rounded-full flex items-center justify-center group-hover:bg-carmelita-dark transition-colors shadow-md">
+                                <UtensilsCrossed className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                            </div>
+                            <span className="font-display text-4xl md:text-5xl font-bold text-carmelita-dark drop-shadow-sm tracking-tight">
+                                Tablereserve
+                            </span>
                         </Link>
                     </div>
 
