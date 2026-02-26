@@ -20,7 +20,7 @@ export default async function RestaurantsAdminPage() {
         .eq("id", user.id)
         .single();
 
-    if (!profile || profile.role !== "admin") redirect("/");
+    if (!profile || (profile.role !== "admin" && profile.role !== "super_admin")) redirect("/");
 
     const restaurants = await getRestaurants();
 

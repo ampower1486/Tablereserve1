@@ -38,6 +38,11 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
 
     // Supabase Realtime
     useEffect(() => {
+        setReservations(initialReservations);
+        setFilter("all");
+    }, [initialReservations]);
+
+    useEffect(() => {
         const supabase = createClient();
         const channel = supabase
             .channel("reservations-realtime")
