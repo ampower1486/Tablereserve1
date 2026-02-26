@@ -244,8 +244,8 @@ function RestaurantCard({
                         onClick={handleDelete}
                         disabled={deleting}
                         className={`p-2 rounded-lg transition-colors ${confirmDelete
-                                ? "bg-red-100 text-red-600 hover:bg-red-200"
-                                : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                            ? "bg-red-100 text-red-600 hover:bg-red-200"
+                            : "text-gray-400 hover:text-red-500 hover:bg-red-50"
                             }`}
                         title={confirmDelete ? "Click again to confirm" : "Delete"}
                     >
@@ -298,6 +298,25 @@ function RestaurantCard({
                     <Clock className="w-3 h-3" />
                     {restaurant.time_slots?.length ?? 0} time slots
                 </span>
+            </div>
+
+            {/* Booking URL */}
+            <div className="px-6 pb-4">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2">
+                    <span className="text-xs text-gray-400 shrink-0">🔗</span>
+                    <span className="text-xs font-mono text-gray-600 truncate flex-1">
+                        {typeof window !== "undefined" ? window.location.origin : "https://tablereserve1.vercel.app"}/book/{restaurant.slug}
+                    </span>
+                    <button
+                        onClick={() => {
+                            const url = `${window.location.origin}/book/${restaurant.slug}`;
+                            navigator.clipboard.writeText(url);
+                        }}
+                        className="text-xs text-carmelita-red hover:underline shrink-0 font-medium"
+                    >
+                        Copy
+                    </button>
+                </div>
             </div>
 
             {/* Expanded panel */}
