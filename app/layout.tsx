@@ -29,13 +29,15 @@ export default function RootLayout({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 {/* Conect-R Logo */}
-                                <div className="mb-3 flex items-center gap-3">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src="/conect-r-logo.png"
-                                        alt="Conect R LLC"
-                                        className="h-12 w-auto bg-white p-2.5 rounded-md shadow-sm"
-                                    />
+                                <div className="mb-6">
+                                    <div className="relative h-[80px] w-[290px] overflow-hidden rounded-xl bg-white shadow-md flex items-center justify-center">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src="/conect-r-logo.png"
+                                            alt="Conect R LLC"
+                                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[240px] w-auto max-w-none mix-blend-multiply"
+                                        />
+                                    </div>
                                 </div>
                                 <h3 className="font-display text-xl font-bold text-carmelita-gold mb-3">
                                     Conect R LLC
