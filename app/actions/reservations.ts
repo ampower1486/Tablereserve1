@@ -139,47 +139,63 @@ export async function createReservation(
         return { error: error.message };
     }
 
-    // Send SMS confirmation if guest provided a phone number
+    // ── Send SMS directly via Twilio API ────────────────────────────────
     if (formData.guestPhone) {
         try {
-            // Fetch restaurant info for the message
-            const { data: restaurant } = await supabase
-                .from("restaurants")
-                .select("name, phone")
-                .eq("id", restaurantId)
-                .single();
+            const accountSid = process.env.TWILIO_ACCOUNT_SID;
+            const authToken = process.env.TWILIO_AUTH_TOKEN;
+            const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
-            const baseUrl =
-                process.env.NEXT_PUBLIC_SITE_URL ||
-                (process.env.VERCEL_URL
-                    ? `https://${process.env.VERCEL_URL}`
-                    : "http://localhost:3000");
+            if (accountSid && authToken && fromNumber) {
+                // Fetch restaurant details for the message
+                const { data: restaurant } = await supabase
+                    .from("restaurants")
+                    .select("name, phone")
+                    .eq("id", restaurantId)
+                    .single();
 
-            // Fire-and-forget — don't block the reservation on SMS success
-            fetch(`${baseUrl}/api/notify/sms`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    guestPhone: formData.guestPhone,
-                    guestName: formData.guestName,
-                    restaurantName: restaurant?.name ?? "",
-                    restaurantPhone: restaurant?.phone ?? "",
-                    reservationCode: code,
-                    date: reservationDate,
-                    timeSlot: formData.timeSlot,
-                    partySize: formData.partySize,
-                }),
-            }).catch(() => {
-                // Silently ignore SMS errors — reservation is already saved
-            });
+                const restaurantName = restaurant?.name ?? "the restaurant";
+                const restaurantPhone = restaurant?.phone ?? "";
+                const contactLine = restaurantPhone
+                    ? `\nQuestions? Call us at ${restaurantPhone}.`
+                    : "";
+
+                const body =
+                    `✅ Reservation Confirmed!\n\n` +
+                    `Hi ${formData.guestName}, you're all set at ${restaurantName}.\n\n` +
+                    `📅 ${reservationDate}\n` +
+                    `🕐 ${formData.timeSlot}\n` +
+                    `👥 ${formData.partySize} guest${formData.partySize !== 1 ? "s" : ""}\n` +
+                    `🔖 Code: ${code}` +
+                    contactLine +
+                    `\n\nSee you soon! — Tablereserve`;
+
+                // Direct Twilio REST API call — reliable on Vercel serverless
+                await fetch(
+                    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
+                    {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({
+                            From: fromNumber,
+                            To: formData.guestPhone,
+                            Body: body,
+                        }),
+                    }
+                );
+            }
         } catch {
-            // Don't fail the reservation if SMS prep fails
+            // Don't fail the reservation if SMS fails
         }
     }
 
     revalidatePath("/admin");
     return { data, code };
 }
+
 
 export async function getReservationByCode(code: string) {
     const supabase = await createClient();
