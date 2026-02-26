@@ -24,16 +24,16 @@ export default function HomePage() {
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 text-center px-6 max-w-3xl mx-auto animate-fade-in">
+                <div className="relative z-10 text-center px-6 max-w-3xl mx-auto animate-fade-in -mt-40">
                     {/* Logo mark */}
-                    <div className="mb-8 flex justify-center w-full">
+                    <div className="mb-24 flex justify-center w-full">
                         <div className="bg-white/95 backdrop-blur-md px-10 py-6 rounded-[2rem] shadow-2xl transform scale-90 sm:scale-110">
                             <Logo />
                         </div>
                     </div>
 
                     {/* Headline */}
-                    <h1 className="font-display text-5xl sm:text-7xl font-bold text-white leading-tight mb-6">
+                    <h1 className="font-display text-5xl sm:text-7xl font-bold text-white leading-tight mb-4">
                         Reserve Your{" "}
                         <span className="text-carmelita-gold italic">Perfect</span>
                         <br />
@@ -43,8 +43,8 @@ export default function HomePage() {
                     {/* Subtext */}
                     <p className="text-white/75 text-lg sm:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
                         The simplest way to book a table at{" "}
-                        <span className="text-white font-medium">Carmelitas Mexican Restaurant</span>.
-                        Select your date, choose your time, and arrive ready to enjoy.
+                        <span className="text-white font-medium">your favorite restaurant</span>.
+                        Select your date, choose your time, and arrive ready to enjoy!
                     </p>
 
                     {/* CTA */}

@@ -19,7 +19,7 @@ export function Header({ user, isAdmin }: HeaderProps) {
     const hideCenterLogo = pathname === "/" || pathname === "/login" || pathname === "/register" || pathname.startsWith("/book");
 
     return (
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+        <header className={`z-50 ${pathname === "/" ? "absolute top-0 w-full bg-transparent border-transparent" : "sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm"}`}>
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-24 relative">
 
