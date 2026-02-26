@@ -9,9 +9,13 @@ export default async function BookPage() {
         <div className="min-h-screen bg-gradient-to-b from-carmelita-cream to-white py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-12 animate-slide-up">
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-carmelita-red/10 rounded-full mb-4">
-                        <CalendarDays className="w-7 h-7 text-carmelita-red" />
+                <div className="text-center mb-12 animate-slide-up flex flex-col items-center">
+                    <div className="mb-6 flex justify-center w-full">
+                        <img
+                            src="/logo.png"
+                            alt="Tablereserve"
+                            className="h-16 md:h-20 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
+                        />
                     </div>
                     <h1 className="font-display text-4xl font-bold text-carmelita-dark mb-2">
                         Choose a Restaurant

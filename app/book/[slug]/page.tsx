@@ -29,9 +29,13 @@ export default async function BookSlugPage({ params }: BookSlugPageProps) {
     return (
         <div className="min-h-screen bg-gradient-to-b from-carmelita-cream to-white py-12 px-4 sm:px-6 lg:px-8">
             {/* Page header */}
-            <div className="text-center mb-10 animate-slide-up">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-carmelita-red/10 rounded-full mb-4">
-                    <CalendarDays className="w-7 h-7 text-carmelita-red" />
+            <div className="text-center mb-10 animate-slide-up flex flex-col items-center">
+                <div className="mb-6 flex justify-center w-full">
+                    <img
+                        src="/logo.png"
+                        alt="Tablereserve"
+                        className="h-14 md:h-16 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
+                    />
                 </div>
                 <h1 className="font-display text-3xl md:text-4xl font-bold text-carmelita-dark mb-2">
                     Reserve Your Table

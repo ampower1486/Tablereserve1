@@ -25,12 +25,13 @@ export default function HomePage() {
                 {/* Content */}
                 <div className="relative z-10 text-center px-6 max-w-3xl mx-auto animate-fade-in">
                     {/* Logo mark */}
-                    <div className="mb-8 inline-flex flex-col items-center gap-3">
-                        <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-2xl">
-                            <CalendarDays className="w-10 h-10 text-carmelita-gold" />
-                        </div>
-                        <div className="text-white/60 text-sm font-light tracking-[6px] uppercase">
-                            Tablereserve
+                    <div className="mb-8 flex justify-center w-full">
+                        <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-2xl">
+                            <img
+                                src="/logo.png"
+                                alt="Tablereserve"
+                                className="h-16 sm:h-20 w-auto object-contain pointer-events-none select-none"
+                            />
                         </div>
                     </div>
 

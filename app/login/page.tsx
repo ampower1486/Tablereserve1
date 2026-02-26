@@ -22,14 +22,14 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-carmelita-cream to-white flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-md animate-slide-up">
-                {/* Logo */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-carmelita-dark rounded-full mb-4">
-                        <UtensilsCrossed className="w-7 h-7 text-white" />
+                <div className="text-center mb-8 flex flex-col items-center">
+                    <div className="mb-6 flex justify-center w-full">
+                        <img
+                            src="/logo.png"
+                            alt="Tablereserve"
+                            className="h-16 w-auto object-contain drop-shadow-sm pointer-events-none select-none"
+                        />
                     </div>
-                    <h1 className="font-display text-3xl font-bold text-carmelita-dark">
-                        Welcome Back
-                    </h1>
                     <p className="text-gray-500 mt-1">Sign in to your account</p>
                 </div>
 
