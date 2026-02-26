@@ -52,12 +52,18 @@ function RestaurantForm({
         const fd = new FormData(e.currentTarget);
         startTransition(async () => {
             try {
+                let res;
                 if (initial) {
-                    await updateRestaurant(initial.id, fd);
+                    res = await updateRestaurant(initial.id, fd);
                 } else {
-                    await createRestaurant(fd);
+                    res = await createRestaurant(fd);
                 }
-                onDone();
+
+                if (res?.error) {
+                    setError(res.error);
+                } else {
+                    onDone();
+                }
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Something went wrong");
             }
@@ -210,8 +216,12 @@ function RestaurantCard({
             return;
         }
         startDelete(async () => {
-            await deleteRestaurant(restaurant.id);
-            onRefresh();
+            const res = await deleteRestaurant(restaurant.id);
+            if (res?.error) {
+                alert(res.error);
+            } else {
+                onRefresh();
+            }
         });
     }
 

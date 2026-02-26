@@ -11,7 +11,10 @@ export async function getRestaurants(): Promise<Restaurant[]> {
         .select("*")
         .order("created_at", { ascending: false });
 
-    if (error) throw new Error(error.message);
+    if (error) {
+        console.error("DB Error fetching restaurants:", error);
+        return [];
+    }
     return data ?? [];
 }
 
@@ -36,8 +39,9 @@ export async function createRestaurant(formData: FormData) {
         max_party_size: parseInt(formData.get("max_party_size") as string, 10),
     });
 
-    if (error) throw new Error(error.message);
+    if (error) return { error: error.message };
     revalidatePath("/admin/restaurants");
+    return { success: true };
 }
 
 export async function updateRestaurant(id: string, formData: FormData) {
@@ -67,8 +71,9 @@ export async function updateRestaurant(id: string, formData: FormData) {
         })
         .eq("id", id);
 
-    if (error) throw new Error(error.message);
+    if (error) return { error: error.message };
     revalidatePath("/admin/restaurants");
+    return { success: true };
 }
 
 export async function deleteRestaurant(id: string) {
@@ -78,6 +83,7 @@ export async function deleteRestaurant(id: string) {
         .delete()
         .eq("id", id);
 
-    if (error) throw new Error(error.message);
+    if (error) return { error: error.message };
     revalidatePath("/admin/restaurants");
+    return { success: true };
 }

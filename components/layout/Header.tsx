@@ -18,67 +18,60 @@ export function Header({ user, isAdmin }: HeaderProps) {
     return (
         <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 bg-carmelita-red rounded-full flex items-center justify-center group-hover:bg-carmelita-dark transition-colors">
-                            <UtensilsCrossed className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="font-display text-xl font-bold text-carmelita-dark">
-                            Tablereserve
-                        </span>
-                    </Link>
+                <div className="flex items-center justify-between h-24 relative">
 
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-6">
-                        <NavLink href="/" active={pathname === "/"}>
-                            Home
-                        </NavLink>
-                        <NavLink href="/book" active={pathname === "/book"}>
-                            Book a Table
-                        </NavLink>
-                        {isAdmin && (
-                            <NavLink href="/admin" active={pathname.startsWith("/admin")}>
-                                Admin
-                            </NavLink>
-                        )}
+                    {/* Left Side Navigation (Admin Only) */}
+                    <div className="flex-1 flex items-center">
+                        <div className="hidden md:flex items-center gap-6">
+                            {isAdmin && (
+                                <NavLink href="/admin" active={pathname.startsWith("/admin")}>
+                                    Admin Dashboard
+                                </NavLink>
+                            )}
+                        </div>
+                        {/* Mobile menu toggle (Left aligned now for balance) */}
+                        <button
+                            className="md:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            aria-label="Toggle menu"
+                        >
+                            {menuOpen ? (
+                                <X className="w-6 h-6" />
+                            ) : (
+                                <Menu className="w-6 h-6" />
+                            )}
+                        </button>
                     </div>
 
-                    {/* Auth buttons */}
-                    <div className="hidden md:flex items-center gap-3">
+                    {/* Center Logo */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <Link href="/" className="block hover:opacity-90 transition-opacity">
+                            {/* Make logo massive as requested */}
+                            <img
+                                src="/logo.png"
+                                alt="Tablereserve"
+                                className="h-[72px] md:h-[96px] w-auto object-contain drop-shadow-sm"
+                            />
+                        </Link>
+                    </div>
+
+                    {/* Right Side Auth */}
+                    <div className="flex-1 flex items-center justify-end gap-3">
                         {user ? (
                             <form action={signOut}>
-                                <button type="submit" className="btn-secondary text-sm py-2 px-4">
+                                <button type="submit" className="btn-secondary text-sm py-2 px-4 shadow-sm">
                                     Sign Out
                                 </button>
                             </form>
                         ) : (
-                            <>
-                                <Link
-                                    href="/login"
-                                    className="text-sm font-medium text-carmelita-dark hover:text-carmelita-red transition-colors"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link href="/book" className="btn-primary text-sm py-2 px-5">
-                                    Book Now
-                                </Link>
-                            </>
+                            <Link
+                                href="/login"
+                                className="text-sm font-medium text-carmelita-dark hover:text-carmelita-red transition-colors bg-carmelita-cream/50 hover:bg-carmelita-cream px-4 py-2 rounded-full hidden md:block"
+                            >
+                                Sign In
+                            </Link>
                         )}
                     </div>
-
-                    {/* Mobile menu toggle */}
-                    <button
-                        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        aria-label="Toggle menu"
-                    >
-                        {menuOpen ? (
-                            <X className="w-5 h-5" />
-                        ) : (
-                            <Menu className="w-5 h-5" />
-                        )}
-                    </button>
                 </div>
 
                 {/* Mobile menu */}
