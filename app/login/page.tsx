@@ -63,6 +63,14 @@ export default function LoginPage() {
                                 placeholder="••••••••"
                             />
                         </div>
+                        <div className="flex items-center justify-end">
+                            <Link
+                                href="/forgot-password"
+                                className="text-xs text-carmelita-red hover:underline"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
 
                         {error && (
                             <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-sm">
@@ -86,14 +94,16 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-gray-500">
-                        Don&apos;t have an account?{" "}
-                        <Link
-                            href="/register"
-                            className="font-semibold text-carmelita-red hover:underline"
-                        >
-                            Create one
-                        </Link>
+                    <div className="mt-6 space-y-2 text-center text-sm text-gray-500">
+                        <div>
+                            Don&apos;t have an account?{" "}
+                            <Link
+                                href="/register"
+                                className="font-semibold text-carmelita-red hover:underline"
+                            >
+                                Create one
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
