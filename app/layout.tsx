@@ -34,7 +34,7 @@ export default function RootLayout({
                                     <img
                                         src="/conect-r-logo.png"
                                         alt="Conect R LLC"
-                                        className="h-8 w-auto brightness-0 invert opacity-80"
+                                        className="h-12 w-auto bg-white p-2.5 rounded-md shadow-sm"
                                     />
                                 </div>
                                 <h3 className="font-display text-xl font-bold text-carmelita-gold mb-3">
