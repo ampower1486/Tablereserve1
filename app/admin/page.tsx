@@ -33,6 +33,15 @@ export default async function AdminPage() {
         getAdminStats(),
     ]);
 
+    // Fetch restaurants for the Create Reservation modal
+    let availableRestaurants: { id: string; name: string }[] = [];
+    if (isSuperAdmin) {
+        const { data } = await supabase.from("restaurants").select("id, name").order("name");
+        availableRestaurants = data || [];
+    } else if (profile.restaurant_id && restaurantName) {
+        availableRestaurants = [{ id: profile.restaurant_id, name: restaurantName }];
+    }
+
     const confirmedToday = reservations.filter((r) => {
         const today = new Date().toISOString().split("T")[0];
         return r.date === today && r.status === "confirmed";
@@ -127,7 +136,10 @@ export default async function AdminPage() {
                             Updating in real-time
                         </div>
                     </div>
-                    <ReservationTable initialReservations={reservations} />
+                    <ReservationTable
+                        initialReservations={reservations}
+                        availableRestaurants={availableRestaurants}
+                    />
                 </div>
             </div>
         </div>

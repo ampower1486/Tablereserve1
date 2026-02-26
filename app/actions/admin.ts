@@ -82,6 +82,66 @@ export async function cancelReservation(id: string) {
     return { success: true };
 }
 
+function generateCode(): string {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+export async function createAdminReservation(data: {
+    restaurant_id: string;
+    date: string;
+    time_slot: string;
+    party_size: number;
+    guest_name: string;
+    guest_email: string;
+    guest_phone?: string;
+    notes?: string;
+}) {
+    const supabase = await createClient();
+
+    // Create a unique code
+    let code = generateCode();
+    let attempts = 0;
+    while (attempts < 10) {
+        const { data: existing } = await supabase
+            .from("reservations")
+            .select("id")
+            .eq("code", code)
+            .single();
+        if (!existing) break;
+        code = generateCode();
+        attempts++;
+    }
+
+    // Insert directly, bypassing capacity checks (admin override)
+    const { data: newRes, error } = await supabase
+        .from("reservations")
+        .insert({
+            code,
+            restaurant_id: data.restaurant_id,
+            user_id: null,
+            guest_name: data.guest_name,
+            guest_email: data.guest_email,
+            guest_phone: data.guest_phone || null,
+            date: data.date,
+            time_slot: data.time_slot,
+            party_size: data.party_size,
+            notes: data.notes || "Created via Admin Dashboard (Override)",
+            status: "confirmed",
+        })
+        .select()
+        .single();
+
+    if (error) return { error: error.message };
+
+    revalidatePath("/admin");
+    return { data: newRes };
+}
+
 export async function getAdminStats() {
     const supabase = await createClient();
     const profile = await getMyProfile();
