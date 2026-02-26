@@ -64,6 +64,43 @@ export async function createReservation(
         return { error: "Date and time slot are required" };
     }
 
+    const reservationDate = formData.date.toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
+
+    // ── 1-hour advance booking check ──────────────────────────
+    if (reservationDate === today) {
+        const [timePart, period] = formData.timeSlot.split(" ");
+        const [hoursStr, minutesStr] = timePart.split(":");
+        let hours = parseInt(hoursStr, 10);
+        const minutes = parseInt(minutesStr, 10);
+        if (period === "PM" && hours !== 12) hours += 12;
+        if (period === "AM" && hours === 12) hours = 0;
+        const slotTime = new Date();
+        slotTime.setHours(hours, minutes, 0, 0);
+        const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+        if (slotTime < oneHourFromNow) {
+            return { error: "Reservations must be made at least 1 hour in advance. Please choose a later time." };
+        }
+    }
+
+    // ── Per-slot capacity check ────────────────────────────────
+    const { data: restaurantData } = await supabase
+        .from("restaurants")
+        .select("max_reservations_per_slot")
+        .eq("id", restaurantId)
+        .single();
+    const maxPerSlot = restaurantData?.max_reservations_per_slot ?? 10;
+    const { count: slotCount } = await supabase
+        .from("reservations")
+        .select("id", { count: "exact", head: true })
+        .eq("restaurant_id", restaurantId)
+        .eq("date", reservationDate)
+        .eq("time_slot", formData.timeSlot)
+        .eq("status", "confirmed");
+    if ((slotCount ?? 0) >= maxPerSlot) {
+        return { error: "This time slot is fully booked. Please choose a different time." };
+    }
+
     // Generate a unique code
     let code = generateCode();
     let attempts = 0;
@@ -78,7 +115,7 @@ export async function createReservation(
         attempts++;
     }
 
-    const reservationDate = formData.date.toISOString().split("T")[0];
+    // (reservationDate already declared above)
 
     const { data, error } = await supabase
         .from("reservations")

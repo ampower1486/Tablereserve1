@@ -131,7 +131,6 @@ export function BookingForm({
                     </div>
                 )}
 
-                {/* Step 1: Time */}
                 {step === 1 && (
                     <div>
                         <div className="flex items-center gap-2 mb-4">
@@ -144,23 +143,43 @@ export function BookingForm({
                             </p>
                         )}
                         <div className="grid grid-cols-3 gap-2">
-                            {timeSlots.map((slot) => (
-                                <button
-                                    key={slot}
-                                    onClick={() =>
-                                        setFormData((p) => ({ ...p, timeSlot: slot }))
-                                    }
-                                    className={`py-2.5 px-3 rounded-xl text-sm font-medium border-2 transition-all ${formData.timeSlot === slot
-                                        ? "bg-carmelita-dark text-white border-carmelita-dark"
-                                        : "border-gray-200 text-gray-700 hover:border-carmelita-red hover:text-carmelita-red"
-                                        }`}
-                                >
-                                    {slot}
-                                </button>
-                            ))}
+                            {timeSlots.map((slot) => {
+                                // Filter out same-day slots within 1 hour
+                                const isToday =
+                                    formData.date &&
+                                    formData.date.toISOString().split("T")[0] ===
+                                    new Date().toISOString().split("T")[0];
+                                let tooSoon = false;
+                                if (isToday) {
+                                    const [timePart, period] = slot.split(" ");
+                                    const [h, m] = timePart.split(":").map(Number);
+                                    let hours = h;
+                                    if (period === "PM" && h !== 12) hours += 12;
+                                    if (period === "AM" && h === 12) hours = 0;
+                                    const slotTime = new Date();
+                                    slotTime.setHours(hours, m, 0, 0);
+                                    tooSoon = slotTime < new Date(Date.now() + 60 * 60 * 1000);
+                                }
+                                if (tooSoon) return null;
+                                return (
+                                    <button
+                                        key={slot}
+                                        onClick={() =>
+                                            setFormData((p) => ({ ...p, timeSlot: slot }))
+                                        }
+                                        className={`py-2.5 px-3 rounded-xl text-sm font-medium border-2 transition-all ${formData.timeSlot === slot
+                                                ? "bg-carmelita-dark text-white border-carmelita-dark"
+                                                : "border-gray-200 text-gray-700 hover:border-carmelita-red hover:text-carmelita-red"
+                                            }`}
+                                    >
+                                        {slot}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
+
 
                 {/* Step 2: Party details */}
                 {step === 2 && (

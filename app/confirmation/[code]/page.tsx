@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getReservationByCode } from "@/app/actions/reservations";
 import { format, parseISO } from "date-fns";
 import { Check, CalendarDays, Clock, Users, UtensilsCrossed, MapPin } from "lucide-react";
+import { ConfettiEffect } from "@/components/ConfettiEffect";
+
 
 interface ConfirmationPageProps {
     params: Promise<{ code: string }>;
@@ -25,8 +27,10 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
     return (
         <div className="min-h-screen bg-gradient-to-b from-carmelita-cream to-white py-12 px-4 sm:px-6">
             <div className="max-w-lg mx-auto animate-slide-up">
+                <ConfettiEffect />
 
                 {/* Success Header */}
+
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
                         <Check className="w-8 h-8 text-green-600" />
