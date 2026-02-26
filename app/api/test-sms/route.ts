@@ -44,10 +44,34 @@ export async function POST(req: NextRequest) {
 
     const twilioData = await twilioRes.json();
 
+    let finalStatus = twilioData.status;
+    let errorCode = twilioData.error_code;
+    let errorMessage = twilioData.error_message;
+
+    // Wait 3 seconds to let Twilio process the message
+    if (twilioData.sid) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        const statusRes = await fetch(
+            `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages/${twilioData.sid}.json`,
+            {
+                headers: {
+                    Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+                },
+            }
+        );
+        const statusData = await statusRes.json();
+        finalStatus = statusData.status;
+        errorCode = statusData.error_code;
+        errorMessage = statusData.error_message;
+    }
+
     return NextResponse.json({
         credCheck,
         toNumber,
         twilioStatus: twilioRes.status,
+        finalStatus,
+        errorCode,
+        errorMessage,
         twilioResponse: twilioData,
     });
 }
