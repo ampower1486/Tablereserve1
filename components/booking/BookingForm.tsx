@@ -168,8 +168,8 @@ export function BookingForm({
                                             setFormData((p) => ({ ...p, timeSlot: slot }))
                                         }
                                         className={`py-2.5 px-3 rounded-xl text-sm font-medium border-2 transition-all ${formData.timeSlot === slot
-                                                ? "bg-carmelita-dark text-white border-carmelita-dark"
-                                                : "border-gray-200 text-gray-700 hover:border-carmelita-red hover:text-carmelita-red"
+                                            ? "bg-carmelita-dark text-white border-carmelita-dark"
+                                            : "border-gray-200 text-gray-700 hover:border-carmelita-red hover:text-carmelita-red"
                                             }`}
                                     >
                                         {slot}
@@ -257,20 +257,38 @@ export function BookingForm({
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Phone Number
+                                    <span className="text-gray-400 font-normal ml-1">(optional)</span>
                                 </label>
-                                <input
-                                    type="tel"
-                                    className="input-field"
-                                    placeholder="(555) 000-0000"
-                                    value={formData.guestPhone}
-                                    onChange={(e) =>
-                                        setFormData((p) => ({
-                                            ...p,
-                                            guestPhone: e.target.value,
-                                        }))
-                                    }
-                                />
+                                <div className="flex">
+                                    {/* Fixed +1 prefix */}
+                                    <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-200 bg-gray-50 text-gray-500 text-sm font-medium select-none">
+                                        +1
+                                    </span>
+                                    <input
+                                        type="tel"
+                                        inputMode="numeric"
+                                        className="input-field rounded-l-none flex-1"
+                                        placeholder="(555) 000-0000"
+                                        value={formData.guestPhone}
+                                        maxLength={14}
+                                        onChange={(e) => {
+                                            // Strip all non-digits
+                                            const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                            // Auto-format as (XXX) XXX-XXXX
+                                            let formatted = digits;
+                                            if (digits.length > 6) {
+                                                formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+                                            } else if (digits.length > 3) {
+                                                formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+                                            } else if (digits.length > 0) {
+                                                formatted = `(${digits}`;
+                                            }
+                                            setFormData((p) => ({ ...p, guestPhone: formatted }));
+                                        }}
+                                    />
+                                </div>
                             </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Special Requests
