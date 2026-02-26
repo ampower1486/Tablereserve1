@@ -6,10 +6,17 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ filter?: string }>;
+}) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect("/login");
+
+    const resolvedParams = await searchParams;
+    const filterParam = resolvedParams.filter;
 
     // Get admin's profile and linked restaurant
     const profile = await getMyProfile();
@@ -29,9 +36,13 @@ export default async function AdminPage() {
     const isSuperAdmin = profile.role === "super_admin";
 
     const [reservations, stats] = await Promise.all([
-        getAllReservations(),
+        getAllReservations(filterParam),
         getAdminStats(),
     ]);
+
+    const activeFilterText = filterParam === "today" ? "Today's" :
+        filterParam === "today_confirmed" ? "Today's Confirmed" :
+            filterParam === "confirmed" ? "Confirmed" : "All";
 
     // Fetch restaurants for the Create Reservation modal
     let availableRestaurants: { id: string; name: string }[] = [];
@@ -107,32 +118,48 @@ export default async function AdminPage() {
                             color="blue"
                         />
                     </Link>
-                    <StatCard
-                        title="Confirmed"
-                        value={stats.confirmed}
-                        icon={<CheckCircle className="w-5 h-5" />}
-                        color="green"
-                    />
-                    <StatCard
-                        title="Today"
-                        value={stats.today}
-                        icon={<TrendingUp className="w-5 h-5" />}
-                        color="orange"
-                    />
-                    <StatCard
-                        title="Today Confirmed"
-                        value={confirmedToday}
-                        icon={<Users className="w-5 h-5" />}
-                        color="purple"
-                    />
+                    <Link href="/admin?filter=confirmed" className="block transition-transform hover:scale-[1.02]">
+                        <StatCard
+                            title="Confirmed"
+                            value={stats.confirmed}
+                            icon={<CheckCircle className="w-5 h-5" />}
+                            color="green"
+                        />
+                    </Link>
+                    <Link href="/admin?filter=today" className="block transition-transform hover:scale-[1.02]">
+                        <StatCard
+                            title="Today"
+                            value={stats.today}
+                            icon={<TrendingUp className="w-5 h-5" />}
+                            color="orange"
+                        />
+                    </Link>
+                    <Link href="/admin?filter=today_confirmed" className="block transition-transform hover:scale-[1.02]">
+                        <StatCard
+                            title="Today Confirmed"
+                            value={confirmedToday}
+                            icon={<Users className="w-5 h-5" />}
+                            color="purple"
+                        />
+                    </Link>
                 </div>
 
                 {/* Reservations Panel */}
                 <div className="card p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="font-display text-xl font-bold text-carmelita-dark">
-                            {restaurantName ? `${restaurantName} Reservations` : "All Reservations"}
-                        </h2>
+                        <div className="flex flex-col">
+                            <h2 className="font-display text-xl font-bold text-carmelita-dark">
+                                {restaurantName ? `${restaurantName} Reservations` : "All Reservations"}
+                            </h2>
+                            {filterParam && (
+                                <div className="text-sm text-carmelita-red mt-1 flex items-center gap-2">
+                                    <span>Showing: <strong>{activeFilterText}</strong></span>
+                                    <Link href="/admin" className="text-gray-400 hover:text-carmelita-dark underline text-xs">
+                                        Clear Filter
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                             Updating in real-time

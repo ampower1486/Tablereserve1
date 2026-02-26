@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { UtensilsCrossed, Loader2 } from "lucide-react";
 import { signUp } from "@/app/actions/auth";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 
 export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
@@ -45,6 +46,17 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="card p-8">
+                    <GoogleSignInButton text="Sign up with Google" next="/" />
+
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-white text-gray-500">Or register with email</span>
+                        </div>
+                    </div>
+
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

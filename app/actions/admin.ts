@@ -16,11 +16,6 @@ export async function getMyProfile() {
     return data;
 }
 
-/**
- * Returns reservations scoped to the admin's restaurant.
- * Super admins (restaurant_id = null) see all restaurants.
- * Restaurant admins only see their own restaurant.
- */
 export async function getAllReservations(filter?: string) {
     const supabase = await createClient();
     const profile = await getMyProfile();
@@ -31,12 +26,20 @@ export async function getAllReservations(filter?: string) {
         .order("date", { ascending: true })
         .order("time_slot", { ascending: true });
 
-    if (filter && filter !== "all") {
-        query = query.eq("status", filter);
+    if (filter) {
+        if (filter === "today") {
+            const today = new Date().toISOString().split("T")[0];
+            query = query.eq("date", today);
+        } else if (filter === "today_confirmed") {
+            const today = new Date().toISOString().split("T")[0];
+            query = query.eq("date", today).eq("status", "confirmed");
+        } else if (filter !== "all") {
+            query = query.eq("status", filter);
+        }
     }
 
     // Scope to restaurant if not a super admin
-    if (profile?.restaurant_id) {
+    if (profile?.role !== "super_admin" && profile?.restaurant_id) {
         query = query.eq("restaurant_id", profile.restaurant_id);
     }
 
