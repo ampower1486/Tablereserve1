@@ -25,9 +25,12 @@ export async function signIn(formData: FormData) {
 export async function resetPassword(formData: FormData) {
     const supabase = await createClient();
     const email = formData.get("email") as string;
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL)
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
+
+    // Correct precedence: use NEXT_PUBLIC_SITE_URL as-is (already has https://)
+    // then VERCEL_URL prefixed with https://, then localhost fallback
+    const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${siteUrl}/reset-password`,
@@ -36,6 +39,7 @@ export async function resetPassword(formData: FormData) {
     if (error) return { error: error.message };
     return { success: true };
 }
+
 
 export async function updatePassword(formData: FormData) {
     const supabase = await createClient();
