@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { guestPhone, guestName, reservationCode, date, timeSlot } =
-            await request.json();
+        const {
+            guestPhone,
+            guestName,
+            restaurantName,
+            restaurantPhone,
+            reservationCode,
+            date,
+            timeSlot,
+            partySize,
+        } = await request.json();
 
         if (!guestPhone || !reservationCode) {
             return NextResponse.json(
@@ -23,14 +31,29 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const message = `🌮 Carmelitas Confirmation! Hi ${guestName}, your reservation (Code: ${reservationCode}) is confirmed for ${date} at ${timeSlot}. We look forward to seeing you! For changes call (555) 867-5309.`;
+        const restaurant = restaurantName || "the restaurant";
+        const contactLine = restaurantPhone
+            ? ` Questions? Call us at ${restaurantPhone}.`
+            : "";
+
+        const message =
+            `✅ Reservation Confirmed!\n\n` +
+            `Hi ${guestName}, you're all set at ${restaurant}.\n\n` +
+            `📅 ${date}\n` +
+            `🕐 ${timeSlot}\n` +
+            `👥 ${partySize} guest${partySize !== 1 ? "s" : ""}\n` +
+            `🔖 Code: ${reservationCode}\n` +
+            `${contactLine}\n\n` +
+            `See you soon! — Tablereserve`;
 
         const twilioResponse = await fetch(
             `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
             {
                 method: "POST",
                 headers: {
-                    Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+                    Authorization: `Basic ${Buffer.from(
+                        `${accountSid}:${authToken}`
+                    ).toString("base64")}`,
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: new URLSearchParams({
@@ -49,7 +72,8 @@ export async function POST(request: NextRequest) {
         const data = await twilioResponse.json();
         return NextResponse.json({ success: true, sid: data.sid });
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message =
+            error instanceof Error ? error.message : "Unknown error";
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }

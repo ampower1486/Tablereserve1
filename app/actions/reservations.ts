@@ -102,6 +102,44 @@ export async function createReservation(
         return { error: error.message };
     }
 
+    // Send SMS confirmation if guest provided a phone number
+    if (formData.guestPhone) {
+        try {
+            // Fetch restaurant info for the message
+            const { data: restaurant } = await supabase
+                .from("restaurants")
+                .select("name, phone")
+                .eq("id", restaurantId)
+                .single();
+
+            const baseUrl =
+                process.env.NEXT_PUBLIC_SITE_URL ||
+                (process.env.VERCEL_URL
+                    ? `https://${process.env.VERCEL_URL}`
+                    : "http://localhost:3000");
+
+            // Fire-and-forget — don't block the reservation on SMS success
+            fetch(`${baseUrl}/api/notify/sms`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    guestPhone: formData.guestPhone,
+                    guestName: formData.guestName,
+                    restaurantName: restaurant?.name ?? "",
+                    restaurantPhone: restaurant?.phone ?? "",
+                    reservationCode: code,
+                    date: reservationDate,
+                    timeSlot: formData.timeSlot,
+                    partySize: formData.partySize,
+                }),
+            }).catch(() => {
+                // Silently ignore SMS errors — reservation is already saved
+            });
+        } catch {
+            // Don't fail the reservation if SMS prep fails
+        }
+    }
+
     revalidatePath("/admin");
     return { data, code };
 }
