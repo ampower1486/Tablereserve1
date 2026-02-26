@@ -26,19 +26,20 @@ export async function resetPassword(formData: FormData) {
     const supabase = await createClient();
     const email = formData.get("email") as string;
 
-    // Correct precedence: use NEXT_PUBLIC_SITE_URL as-is (already has https://)
-    // then VERCEL_URL prefixed with https://, then localhost fallback
     const siteUrl =
         process.env.NEXT_PUBLIC_SITE_URL ||
         (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/reset-password`,
+        // Route through /auth/callback which exchanges the PKCE code,
+        // then redirects to /reset-password with an active session
+        redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
     });
 
     if (error) return { error: error.message };
     return { success: true };
 }
+
 
 
 export async function updatePassword(formData: FormData) {
