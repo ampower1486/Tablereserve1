@@ -139,6 +139,17 @@ export async function createReservation(
         return { error: error.message };
     }
 
+    // ── Fetch restaurant info once for both SMS + Email ──────────────────
+    const { data: restaurant } = await supabase
+        .from("restaurants")
+        .select("name, phone, address")
+        .eq("id", restaurantId)
+        .single();
+
+    const restaurantName = restaurant?.name ?? "the restaurant";
+    const restaurantPhone = restaurant?.phone ?? "";
+    const restaurantAddress = restaurant?.address ?? "";
+
     // ── Send SMS directly via Twilio API ────────────────────────────────
     if (formData.guestPhone) {
         try {
@@ -147,15 +158,6 @@ export async function createReservation(
             const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
             if (accountSid && authToken && fromNumber) {
-                // Fetch restaurant details for the message
-                const { data: restaurant } = await supabase
-                    .from("restaurants")
-                    .select("name, phone")
-                    .eq("id", restaurantId)
-                    .single();
-
-                const restaurantName = restaurant?.name ?? "the restaurant";
-                const restaurantPhone = restaurant?.phone ?? "";
                 const contactLine = restaurantPhone
                     ? `\nQuestions? Call us at ${restaurantPhone}.`
                     : "";
@@ -170,7 +172,6 @@ export async function createReservation(
                     contactLine +
                     `\n\nSee you soon! — Tablereserve`;
 
-                // Direct Twilio REST API call — reliable on Vercel serverless
                 await fetch(
                     `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
                     {
@@ -190,6 +191,71 @@ export async function createReservation(
         } catch {
             // Don't fail the reservation if SMS fails
         }
+    }
+
+    // ── Send email confirmation via Resend ───────────────────────────────
+    try {
+        const resendApiKey = process.env.RESEND_API_KEY;
+        if (resendApiKey) {
+            const footerLine = [restaurantAddress, restaurantPhone]
+                .filter(Boolean)
+                .join(" · ");
+
+            const htmlEmail = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Reservation Confirmed</title></head>
+<body style="background:#FDF6E3;margin:0;padding:20px;font-family:sans-serif;">
+  <div style="max-width:520px;margin:0 auto;background:white;border-radius:24px;overflow:hidden;box-shadow:0 4px 40px rgba(0,0,0,0.1);">
+    <div style="background:#1A0A00;padding:24px;text-align:center;">
+      <h1 style="color:#D4A520;font-size:22px;margin:0;">${restaurantName}</h1>
+      <p style="color:#9CA3AF;font-size:12px;margin:4px 0 0;">Reservation Confirmed</p>
+    </div>
+    <div style="padding:32px;text-align:center;">
+      <h2 style="color:#1A0A00;font-size:20px;margin:0 0 8px;">You're all set! 🎉</h2>
+      <p style="color:#6B7280;margin:0 0 24px;">Hi ${formData.guestName}, we can't wait to host you!</p>
+      <div style="background:#FDF6E3;border-radius:16px;padding:24px;margin-bottom:24px;">
+        <p style="color:#9CA3AF;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin:0 0 8px;">Reservation Code</p>
+        <p style="color:#1A0A00;font-size:40px;font-weight:900;letter-spacing:8px;margin:0;font-family:monospace;">${code}</p>
+        <p style="color:#9CA3AF;font-size:11px;margin:8px 0 0;">Present this at arrival</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;text-align:left;">
+        <tr>
+          <td style="color:#6B7280;font-size:13px;padding:8px 0;border-bottom:1px solid #F3F4F6;">📅 Date</td>
+          <td style="color:#1A0A00;font-size:13px;font-weight:600;padding:8px 0;border-bottom:1px solid #F3F4F6;text-align:right;">${reservationDate}</td>
+        </tr>
+        <tr>
+          <td style="color:#6B7280;font-size:13px;padding:8px 0;border-bottom:1px solid #F3F4F6;">🕐 Time</td>
+          <td style="color:#1A0A00;font-size:13px;font-weight:600;padding:8px 0;border-bottom:1px solid #F3F4F6;text-align:right;">${formData.timeSlot}</td>
+        </tr>
+        <tr>
+          <td style="color:#6B7280;font-size:13px;padding:8px 0;">👥 Party</td>
+          <td style="color:#1A0A00;font-size:13px;font-weight:600;padding:8px 0;text-align:right;">${formData.partySize} guest${formData.partySize !== 1 ? "s" : ""}</td>
+        </tr>
+      </table>
+    </div>
+    ${footerLine ? `<div style="background:#FDF6E3;padding:16px;text-align:center;">
+      <p style="color:#9CA3AF;font-size:12px;margin:0;">${footerLine}</p>
+    </div>` : ""}
+  </div>
+</body>
+</html>`;
+
+            await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${resendApiKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    from: "Tablereserve <onboarding@resend.dev>",
+                    to: [formData.guestEmail],
+                    subject: `✅ Your reservation is confirmed! Code: ${code}`,
+                    html: htmlEmail,
+                }),
+            });
+        }
+    } catch {
+        // Don't fail the reservation if email fails
     }
 
     revalidatePath("/admin");
