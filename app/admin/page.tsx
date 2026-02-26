@@ -1,7 +1,9 @@
 import { getAllReservations, getAdminStats, getMyProfile } from "@/app/actions/admin";
+import { getRestaurants } from "@/app/actions/restaurants";
+import { signOut } from "@/app/actions/auth";
 import { ReservationTable } from "@/components/admin/ReservationTable";
 import { createClient } from "@/lib/supabase/server";
-import { CalendarDays, Users, CheckCircle, TrendingUp, Store, UserCog } from "lucide-react";
+import { CalendarDays, Users, CheckCircle, TrendingUp, Store, UserCog, LogOut } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient as createServerClient } from "@/lib/supabase/server";
@@ -97,10 +99,19 @@ export default async function AdminPage({
                                         </Link>
                                     </>
                                 )}
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-1.5 ml-2 border-r border-white/20 pr-3">
                                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                                     <span className="text-xs text-green-400">Live</span>
                                 </div>
+                                <form action={signOut}>
+                                    <button
+                                        type="submit"
+                                        className="inline-flex items-center gap-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-full transition-colors ml-1"
+                                    >
+                                        <LogOut className="w-3.5 h-3.5" />
+                                        Log Out
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

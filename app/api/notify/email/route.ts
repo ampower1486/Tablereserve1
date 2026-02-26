@@ -1,27 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-    try {
-        const { guestEmail, guestName, reservationCode, date, timeSlot, partySize } =
-            await request.json();
+  try {
+    const { guestEmail, guestName, reservationCode, date, timeSlot, partySize } =
+      await request.json();
 
-        if (!guestEmail || !reservationCode) {
-            return NextResponse.json(
-                { error: "guestEmail and reservationCode are required" },
-                { status: 400 }
-            );
-        }
+    if (!guestEmail || !reservationCode) {
+      return NextResponse.json(
+        { error: "guestEmail and reservationCode are required" },
+        { status: 400 }
+      );
+    }
 
-        const resendApiKey = process.env.RESEND_API_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY;
 
-        if (!resendApiKey) {
-            return NextResponse.json(
-                { error: "Resend API key not configured" },
-                { status: 503 }
-            );
-        }
+    if (!resendApiKey) {
+      return NextResponse.json(
+        { error: "Resend API key not configured" },
+        { status: 503 }
+      );
+    }
 
-        const htmlBody = `
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || request.headers.get("origin") || "https://tablereserve-nine.vercel.app";
+
+    const htmlBody = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,7 +32,8 @@ export async function POST(request: NextRequest) {
 </head>
 <body style="background:#FDF6E3; margin:0; padding:20px; font-family:sans-serif;">
   <div style="max-width:520px; margin:0 auto; background:white; border-radius:24px; overflow:hidden; box-shadow:0 4px 40px rgba(0,0,0,0.1);">
-    <div style="background:#1A0A00; padding:24px; text-align:center;">
+    <div style="background:#1A0A00; padding:32px 24px; text-align:center;">
+      <img src="${siteUrl}/logo.png" alt="Tablereserve" style="height:60px; max-width:100%; margin-bottom:16px;" />
       <h1 style="color:#D4A520; font-size:24px; margin:0;">🌮 Carmelitas</h1>
       <p style="color:#9CA3AF; font-size:12px; margin:4px 0 0;">Mexican Restaurant</p>
     </div>
@@ -63,29 +66,29 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`;
 
-        const resendResponse = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${resendApiKey}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                from: "Carmelitas <noreply@carmelitas.restaurant>",
-                to: [guestEmail],
-                subject: `🌮 Your reservation is confirmed! Code: ${reservationCode}`,
-                html: htmlBody,
-            }),
-        });
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Carmelitas <noreply@carmelitas.restaurant>",
+        to: [guestEmail],
+        subject: `🌮 Your reservation is confirmed! Code: ${reservationCode}`,
+        html: htmlBody,
+      }),
+    });
 
-        if (!resendResponse.ok) {
-            const err = await resendResponse.json();
-            throw new Error(err.message || "Failed to send email");
-        }
-
-        const data = await resendResponse.json();
-        return NextResponse.json({ success: true, id: data.id });
-    } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        return NextResponse.json({ error: message }, { status: 500 });
+    if (!resendResponse.ok) {
+      const err = await resendResponse.json();
+      throw new Error(err.message || "Failed to send email");
     }
+
+    const data = await resendResponse.json();
+    return NextResponse.json({ success: true, id: data.id });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

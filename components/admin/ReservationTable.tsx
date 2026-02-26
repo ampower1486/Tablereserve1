@@ -34,12 +34,14 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
     const [cancellingId, setCancellingId] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [filter, setFilter] = useState("all");
+    const [restaurantFilter, setRestaurantFilter] = useState("all");
     const [liveTag, setLiveTag] = useState(false);
 
     // Supabase Realtime
     useEffect(() => {
         setReservations(initialReservations);
         setFilter("all");
+        setRestaurantFilter("all");
     }, [initialReservations]);
 
     useEffect(() => {
@@ -75,10 +77,11 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
         };
     }, []);
 
-    const filtered =
-        filter === "all"
-            ? reservations
-            : reservations.filter((r) => r.status === filter);
+    const filtered = reservations.filter((r) => {
+        const matchesStatus = filter === "all" || r.status === filter;
+        const matchesRestaurant = restaurantFilter === "all" || r.restaurant_id === restaurantFilter;
+        return matchesStatus && matchesRestaurant;
+    });
 
     const handleCancel = async (id: string) => {
         setCancellingId(id);
@@ -103,6 +106,21 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
                             {f === "all" ? "All" : STATUS_LABELS[f]}
                         </button>
                     ))}
+
+                    {availableRestaurants.length > 1 && (
+                        <div className="ml-2 border-l border-gray-200 pl-3 flex items-center">
+                            <select
+                                value={restaurantFilter}
+                                onChange={(e) => setRestaurantFilter(e.target.value)}
+                                className="text-sm bg-white border-none rounded-lg py-1.5 px-3 text-gray-700 shadow-sm focus:ring-2 focus:ring-carmelita-red cursor-pointer"
+                            >
+                                <option value="all">All Restaurants</option>
+                                {availableRestaurants.map(r => (
+                                    <option key={r.id} value={r.id}>{r.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3">
