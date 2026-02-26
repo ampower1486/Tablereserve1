@@ -68,12 +68,12 @@ export default async function AdminPage({
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="font-display text-2xl font-bold">
-                                {restaurantName ? `${restaurantName}` : "Admin Dashboard"}
+                                Welcome, {profile.full_name || "Admin"}
                             </h1>
                             <p className="text-gray-400 text-sm mt-0.5">
                                 {isSuperAdmin
                                     ? "Tablereserve · All restaurants"
-                                    : `Tablereserve · ${restaurantName}`}
+                                    : restaurantName ? `Tablereserve · ${restaurantName}` : "Tablereserve Dashboard"}
                             </p>
                         </div>
                         <div className="text-right">
