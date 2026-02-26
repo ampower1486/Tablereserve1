@@ -1,7 +1,8 @@
 import { getAllReservations, getAdminStats } from "@/app/actions/admin";
 import { ReservationTable } from "@/components/admin/ReservationTable";
 import { createClient } from "@/lib/supabase/server";
-import { CalendarDays, Users, CheckCircle, TrendingUp } from "lucide-react";
+import { CalendarDays, Users, CheckCircle, TrendingUp, Store } from "lucide-react";
+import Link from "next/link";
 
 export default async function AdminPage() {
     const supabase = await createClient();
@@ -34,9 +35,18 @@ export default async function AdminPage() {
                         <div className="text-right">
                             <div className="text-sm text-gray-400">Logged in as</div>
                             <div className="text-sm font-medium">{user?.email}</div>
-                            <div className="flex items-center justify-end gap-1.5 mt-1">
-                                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                                <span className="text-xs text-green-400">Live</span>
+                            <div className="flex items-center justify-end gap-3 mt-2">
+                                <Link
+                                    href="/admin/restaurants"
+                                    className="inline-flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full transition-colors"
+                                >
+                                    <Store className="w-3.5 h-3.5" />
+                                    Restaurants
+                                </Link>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                    <span className="text-xs text-green-400">Live</span>
+                                </div>
                             </div>
                         </div>
                     </div>
