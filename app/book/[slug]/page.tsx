@@ -11,7 +11,8 @@ interface BookSlugPageProps {
 
 export async function generateMetadata({ params }: BookSlugPageProps): Promise<Metadata> {
     const { slug } = await params;
-    const restaurant = await getRestaurantBySlug(slug);
+    const decodedSlug = decodeURIComponent(slug);
+    const restaurant = await getRestaurantBySlug(decodedSlug);
     if (!restaurant) return { title: "Restaurant Not Found" };
     return {
         title: `Book a Table | ${restaurant.name}`,
@@ -21,7 +22,8 @@ export async function generateMetadata({ params }: BookSlugPageProps): Promise<M
 
 export default async function BookSlugPage({ params }: BookSlugPageProps) {
     const { slug } = await params;
-    const restaurant = await getRestaurantBySlug(slug);
+    const decodedSlug = decodeURIComponent(slug);
+    const restaurant = await getRestaurantBySlug(decodedSlug);
 
     if (!restaurant) notFound();
 
@@ -41,8 +43,24 @@ export default async function BookSlugPage({ params }: BookSlugPageProps) {
                     {restaurant.name}
                 </p>
                 <div className="flex items-center justify-center gap-4 mt-2 text-sm text-gray-500 flex-wrap">
-                    {restaurant.address && <span>📍 {restaurant.address}</span>}
-                    {restaurant.phone && <span>📞 {restaurant.phone}</span>}
+                    {restaurant.address && (
+                        <a
+                            href={`https://maps.google.com/?q=${encodeURIComponent(restaurant.address)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center hover:text-carmelita-red hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-carmelita-red focus:ring-offset-2 rounded"
+                        >
+                            <span className="mr-1">📍</span> {restaurant.address}
+                        </a>
+                    )}
+                    {restaurant.phone && (
+                        <a
+                            href={`tel:${restaurant.phone.replace(/[^0-9+]/g, '')}`}
+                            className="flex items-center hover:text-carmelita-red hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-carmelita-red focus:ring-offset-2 rounded"
+                        >
+                            <span className="mr-1">📞</span> {restaurant.phone}
+                        </a>
+                    )}
                 </div>
                 {restaurant.description && (
                     <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">
