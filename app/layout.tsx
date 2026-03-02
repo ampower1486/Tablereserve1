@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
 
 export const metadata: Metadata = {
     title: "Tablereserve | Carmelitas Mexican Restaurant",
@@ -22,7 +21,6 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className="bg-white text-carmelita-dark antialiased">
-                <Header />
                 <main className="min-h-screen">{children}</main>
                 <footer className="bg-carmelita-dark text-white py-12 mt-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
