@@ -16,13 +16,17 @@ import {
 import { createReservation } from "@/app/actions/reservations";
 import type { BookingFormData } from "@/lib/types";
 
+import { createClient } from "@/lib/supabase/client";
+import { useEffect } from "react";
+import Link from "next/link";
+
 interface BookingFormProps {
     restaurantId: string;
     timeSlots: string[];
     maxPartySize: number;
 }
 
-const STEPS = ["Date", "Time", "Details", "Confirm"];
+const STEPS = ["Date", "Time", "Account", "Details", "Confirm"];
 
 export function BookingForm({
     restaurantId,
@@ -33,6 +37,10 @@ export function BookingForm({
     const [step, setStep] = useState(0);
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
+    const [authMode, setAuthMode] = useState<"login" | "register">("login");
+    const [authError, setAuthError] = useState<string | null>(null);
+    const [authPending, setAuthPending] = useState(false);
     const [formData, setFormData] = useState<BookingFormData>({
         date: null,
         timeSlot: "",
@@ -43,6 +51,42 @@ export function BookingForm({
         notes: "",
     });
 
+    useEffect(() => {
+        const supabase = createClient();
+
+        // Check current session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+            if (currentUser) {
+                setFormData(p => ({
+                    ...p,
+                    guestName: currentUser.user_metadata?.full_name || p.guestName,
+                    guestEmail: currentUser.email || p.guestEmail,
+                    guestPhone: currentUser.user_metadata?.phone || p.guestPhone,
+                }));
+            }
+        });
+
+        // Listen for changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+            if (currentUser) {
+                setFormData(p => ({
+                    ...p,
+                    guestName: currentUser.user_metadata?.full_name || p.guestName,
+                    guestEmail: currentUser.email || p.guestEmail,
+                    guestPhone: currentUser.user_metadata?.phone || p.guestPhone,
+                }));
+                // Auto-advance if we're on the account step
+                setStep(s => s === 2 ? 3 : s);
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const maxDate = addDays(today, 14);
@@ -50,7 +94,8 @@ export function BookingForm({
     const canProceed = () => {
         if (step === 0) return !!formData.date;
         if (step === 1) return !!formData.timeSlot;
-        if (step === 2)
+        if (step === 2) return !!user;
+        if (step === 3)
             return (
                 formData.guestName.trim() !== "" && formData.guestEmail.trim() !== ""
             );
@@ -181,8 +226,155 @@ export function BookingForm({
                 )}
 
 
-                {/* Step 2: Party details */}
+                {/* Step 2: Account (New) */}
                 {step === 2 && (
+                    <div className="space-y-6">
+                        <div className="text-center mb-6">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-carmelita-red/10 text-carmelita-red mb-3">
+                                <Users className="w-6 h-6" />
+                            </div>
+                            <h3 className="font-display text-2xl font-bold text-carmelita-dark">
+                                {user ? "Account Verified" : "Sign In to Continue"}
+                            </h3>
+                            <p className="text-sm text-gray-500 mt-1">
+                                {user
+                                    ? "You're logged in and ready to finalize your booking."
+                                    : "Mandatory step to save your reservation data securely."}
+                            </p>
+                        </div>
+
+                        {user ? (
+                            <div className="bg-green-50 border border-green-100 rounded-2xl p-6 text-center animate-fade-in">
+                                <div className="flex flex-col items-center gap-2">
+                                    <div className="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg mb-2">
+                                        <Check className="w-7 h-7" />
+                                    </div>
+                                    <p className="font-bold text-lg text-green-900 leading-tight">
+                                        Welcome, {user.user_metadata?.full_name || user.email}!
+                                    </p>
+                                    <p className="text-sm text-green-700">
+                                        Your details will be automatically pre-filled in the next step.
+                                    </p>
+                                    <button
+                                        onClick={() => setStep(3)}
+                                        className="mt-4 text-sm font-semibold text-carmelita-red hover:underline"
+                                    >
+                                        Proceed to Details →
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-5 animate-slide-up">
+                                {/* Tab Switcher */}
+                                <div className="flex p-1 bg-gray-100 rounded-xl">
+                                    <button
+                                        onClick={() => { setAuthMode("login"); setAuthError(null); }}
+                                        className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${authMode === "login" ? "bg-white text-carmelita-dark shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                                    >
+                                        Log In
+                                    </button>
+                                    <button
+                                        onClick={() => { setAuthMode("register"); setAuthError(null); }}
+                                        className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${authMode === "register" ? "bg-white text-carmelita-dark shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                                    >
+                                        Create Account
+                                    </button>
+                                </div>
+
+                                <form
+                                    onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        setAuthError(null);
+                                        setAuthPending(true);
+                                        const supabase = createClient();
+                                        const formData = new FormData(e.currentTarget);
+                                        const email = formData.get("email") as string;
+                                        const password = formData.get("password") as string;
+
+                                        try {
+                                            if (authMode === "login") {
+                                                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                                                if (error) setAuthError(error.message);
+                                            } else {
+                                                const fullName = formData.get("fullName") as string;
+                                                const phone = formData.get("phone") as string;
+                                                const { error, data } = await supabase.auth.signUp({
+                                                    email,
+                                                    password,
+                                                    options: {
+                                                        data: { full_name: fullName, phone }
+                                                    }
+                                                });
+                                                if (error) {
+                                                    setAuthError(error.message);
+                                                } else if (data.user) {
+                                                    // Also create profile record
+                                                    await supabase.from("profiles").upsert({
+                                                        id: data.user.id,
+                                                        full_name: fullName,
+                                                        phone,
+                                                        role: "customer",
+                                                    });
+                                                }
+                                            }
+                                        } catch (err: any) {
+                                            setAuthError(err.message || "An unexpected error occurred");
+                                        } finally {
+                                            setAuthPending(false);
+                                        }
+                                    }}
+                                    className="space-y-4"
+                                >
+                                    {authMode === "register" && (
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-1">Full Name</label>
+                                            <input name="fullName" required className="input-field" placeholder="John Doe" />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-1">Email Address</label>
+                                        <input name="email" type="email" required className="input-field" placeholder="your@email.com" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-1">Password</label>
+                                        <input name="password" type="password" required className="input-field" placeholder="••••••••" minLength={6} />
+                                    </div>
+                                    {authMode === "register" && (
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-1">Phone (Optional)</label>
+                                            <input name="phone" className="input-field" placeholder="(555) 000-0000" />
+                                        </div>
+                                    )}
+
+                                    {authError && (
+                                        <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm animate-shake">
+                                            {authError}
+                                        </div>
+                                    )}
+
+                                    <button
+                                        type="submit"
+                                        disabled={authPending}
+                                        className="btn-primary w-full py-3.5 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                                    >
+                                        {authPending ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            authMode === "login" ? "Sign In & Continue" : "Create Account & Continue"
+                                        )}
+                                    </button>
+                                </form>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+
+                {/* Step 3: Party details */}
+                {step === 3 && (
                     <div>
                         <div className="flex items-center gap-2 mb-4">
                             <Users className="w-5 h-5 text-carmelita-red" />
@@ -307,8 +499,8 @@ export function BookingForm({
                     </div>
                 )}
 
-                {/* Step 3: Confirm */}
-                {step === 3 && (
+                {/* Step 4: Confirm */}
+                {step === 4 && (
                     <div>
                         <h3 className="font-display text-xl font-bold mb-4">
                             Review & Confirm
@@ -361,7 +553,7 @@ export function BookingForm({
                         <ChevronLeft className="w-4 h-4" /> Back
                     </button>
                 )}
-                {step < 3 ? (
+                {step < 4 ? (
                     <button
                         onClick={() => setStep((s) => s + 1)}
                         disabled={!canProceed()}
