@@ -13,7 +13,6 @@ import {
     Plus,
     Loader2,
     AlertTriangle,
-    Phone,
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
@@ -167,11 +166,7 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
                     reservation={reservations.find((r) => r.id === editingId)!}
                     onClose={() => setEditingId(null)}
                     onSave={async (updates) => {
-                        const formattedUpdates = {
-                            ...updates,
-                            party_size: parseInt(updates.party_size, 10),
-                        };
-                        await updateReservation(editingId, formattedUpdates);
+                        await updateReservation(editingId, updates);
                         setEditingId(null);
                     }}
                 />
@@ -225,26 +220,13 @@ function ReservationCard({
                     <div className="font-semibold text-sm text-carmelita-dark truncate">
                         {reservation.guest_name}
                     </div>
-                    <div className="flex flex-col gap-1 mt-1">
-                        <div className="text-xs text-gray-500 truncate flex items-center gap-2">
-                            <span>{reservation.guest_email}</span>
-                        </div>
-                        {reservation.guest_phone ? (
-                            <a
-                                href={`tel:${reservation.guest_phone}`}
-                                className="inline-flex items-center gap-1.5 text-xs text-carmelita-red hover:underline font-medium w-fit"
-                            >
-                                <Phone className="w-3 h-3" />
-                                {reservation.guest_phone}
-                            </a>
-                        ) : (
-                            <button
-                                onClick={onEdit}
-                                className="text-[10px] text-gray-400 hover:text-carmelita-red italic flex items-center gap-1 w-fit mt-0.5"
-                                title="Click to add phone number"
-                            >
-                                <Plus className="w-2.5 h-2.5" /> Add phone number
-                            </button>
+                    <div className="text-xs text-gray-500 truncate mt-0.5 space-x-2">
+                        <span>{reservation.guest_email}</span>
+                        {reservation.guest_phone && (
+                            <span className="inline-flex items-center gap-1 text-gray-500">
+                                <span>•</span>
+                                <span>{reservation.guest_phone}</span>
+                            </span>
                         )}
                     </div>
                 </div>
@@ -348,7 +330,6 @@ function EditModal({
         party_size: String(reservation.party_size),
         status: reservation.status,
         notes: reservation.notes || "",
-        guest_phone: reservation.guest_phone || "",
     });
     const [isPending, setIsPending] = useState(false);
 
@@ -360,7 +341,6 @@ function EditModal({
             party_size: form.party_size,
             status: form.status,
             notes: form.notes,
-            guest_phone: form.guest_phone,
         });
         setIsPending(false);
     };
@@ -424,16 +404,6 @@ function EditModal({
                             <option value="cancelled">Cancelled</option>
                             <option value="no_show">No Show</option>
                         </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Guest Phone</label>
-                        <input
-                            type="tel"
-                            className="input-field"
-                            placeholder="(000) 000-0000"
-                            value={form.guest_phone}
-                            onChange={(e) => setForm((p) => ({ ...p, guest_phone: e.target.value }))}
-                        />
                     </div>
                     <div>
                         <label className="block text-sm font-medium mb-1">Notes</label>

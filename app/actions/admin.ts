@@ -56,7 +56,6 @@ export async function updateReservation(
         party_size?: number;
         status?: string;
         notes?: string;
-        guest_phone?: string;
     }
 ) {
     const supabase = await createClient();
