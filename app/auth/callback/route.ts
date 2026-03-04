@@ -49,6 +49,14 @@ export async function GET(request: NextRequest) {
                 targetUrl = `${origin}/admin`;
             }
 
+            // Append access_token and refresh_token for password reset flow if the next URL is /reset-password
+            if (next === "/reset-password") {
+                const { data: sessionData } = await supabase.auth.getSession();
+                if (sessionData?.session) {
+                    targetUrl = `${origin}/reset-password#access_token=${sessionData.session.access_token}&refresh_token=${sessionData.session.refresh_token}&type=recovery`;
+                }
+            }
+
             const redirectResponse = NextResponse.redirect(targetUrl);
 
             // Reapply the cookies to the new target URL response
