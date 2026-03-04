@@ -336,7 +336,14 @@ export function BookingForm({
                                         <input name="email" type="email" required className="input-field" placeholder="your@email.com" />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 px-1">Password</label>
+                                        <div className="flex items-center justify-between mb-1 px-1">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">Password</label>
+                                            {authMode === "login" && (
+                                                <Link href="/forgot-password" className="text-xs text-carmelita-red hover:underline focus:outline-none focus:ring-2 focus:ring-carmelita-red rounded">
+                                                    Forgot password?
+                                                </Link>
+                                            )}
+                                        </div>
                                         <input name="password" type="password" required className="input-field" placeholder="••••••••" minLength={6} />
                                     </div>
                                     {authMode === "register" && (

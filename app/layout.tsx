@@ -24,38 +24,34 @@ export default function RootLayout({
             <body className="bg-white text-carmelita-dark antialiased">
                 <Header />
                 <main className="min-h-screen">{children}</main>
-                <footer className="bg-carmelita-dark text-white py-12 mt-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                {/* Conect-R Logo */}
-                                <div className="mb-6">
-                                    <div className="relative h-[80px] w-[290px] overflow-hidden rounded-xl bg-white shadow-md flex items-center justify-center">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src="/conect-r-logo.png"
-                                            alt="Conect R LLC"
-                                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[240px] w-auto max-w-none mix-blend-multiply"
-                                        />
-                                    </div>
-                                </div>
-                                <h3 className="font-display text-xl font-bold text-carmelita-gold mb-3">
-                                    Conect R LLC
-                                </h3>
-                                <p className="text-gray-400 text-sm leading-relaxed">
-                                    Tablereserve is a product of Conect R LLC — simple, beautiful
-                                    restaurant reservations.
-                                </p>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold text-white mb-3">Contact</h4>
-                                <div className="text-gray-400 text-sm space-y-1">
-                                    <p>For more information contact Conect R</p>
-                                </div>
+                <footer className="bg-[#0f172a] text-white py-4 mt-auto">
+                    <div className="max-w-7xl mx-auto px-4 w-full flex flex-wrap items-center justify-center gap-4 text-sm text-gray-200">
+                        <div className="flex items-center gap-3">
+                            <span>Powered by</span>
+                            <div className="bg-white rounded flex items-center justify-center px-1.5 py-0.5 h-7">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/conect-r-footer.png"
+                                    alt="Conect-R"
+                                    className="h-4 w-auto object-contain"
+                                />
                             </div>
                         </div>
-                        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-                            <p>© {new Date().getFullYear()} Conect R LLC · Tablereserve. All rights reserved.</p>
+
+                        <span className="text-gray-600 hidden sm:inline">|</span>
+
+                        <div className="flex items-center gap-2.5">
+                            <div className="h-7 w-7 relative overflow-hidden flex items-center justify-center rounded-md bg-transparent">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="/nextup-logo.png"
+                                    alt="Nextup"
+                                    className="h-full w-full object-contain"
+                                />
+                            </div>
+                            <span className="font-medium text-[13px] tracking-wide text-gray-100">
+                                Nextup is a product of Conect-R LLC
+                            </span>
                         </div>
                     </div>
                 </footer>
