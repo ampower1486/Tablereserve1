@@ -89,7 +89,7 @@ export function BookingForm({
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const maxDate = addDays(today, 14);
+    const maxDate = addDays(today, 30);
 
     const canProceed = () => {
         if (step === 0) return !!formData.date;
@@ -158,7 +158,7 @@ export function BookingForm({
                             <h3 className="font-display text-xl font-bold">Choose a Date</h3>
                         </div>
                         <p className="text-sm text-gray-500 mb-4">
-                            Select a date up to 14 days in advance
+                            Select a date up to 30 days in advance
                         </p>
                         <div className="w-full">
                             <Calendar

@@ -178,9 +178,6 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
                     <Link href="/book" className="btn-secondary flex-1 text-center py-3">
                         Make Another Booking
                     </Link>
-                    <Link href="/" className="btn-primary flex-1 text-center py-3">
-                        Back to Home
-                    </Link>
                 </div>
 
                 {/* Policy note */}
