@@ -4,7 +4,7 @@ import { getReservationByCode } from "@/app/actions/reservations";
 import { format, parseISO } from "date-fns";
 import { Check, CalendarDays, Clock, Users, UtensilsCrossed, MapPin } from "lucide-react";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
-
+import { signOut } from "@/app/actions/auth";
 
 interface ConfirmationPageProps {
     params: Promise<{ code: string }>;
@@ -178,8 +178,12 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
                     <Link href="/book" className="btn-secondary flex-1 text-center py-3">
                         Make Another Booking
                     </Link>
+                    <form action={signOut} className="flex-1 flex">
+                        <button type="submit" className="btn-primary flex-1 text-center py-3">
+                            Sign Out
+                        </button>
+                    </form>
                 </div>
-
                 {/* Policy note */}
                 <p className="text-center text-xs text-gray-400 mt-4">
                     We&apos;ll hold your table for 15 minutes past the reservation time.
