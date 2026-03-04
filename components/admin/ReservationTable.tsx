@@ -376,9 +376,28 @@ function EditModal({
                     <div>
                         <label className="block text-sm font-medium mb-1">Time Slot</label>
                         <input
+                            type="time"
                             className="input-field"
-                            value={form.time_slot}
-                            onChange={(e) => setForm((p) => ({ ...p, time_slot: e.target.value }))}
+                            value={(() => {
+                                if (!form.time_slot) return "12:00";
+                                const parts = form.time_slot.split(" ");
+                                if (parts.length !== 2) return "";
+                                const [t, p] = parts;
+                                let [h, m] = t.split(":");
+                                let hour = parseInt(h, 10);
+                                if (p.toUpperCase() === "PM" && hour < 12) hour += 12;
+                                if (p.toUpperCase() === "AM" && hour === 12) hour = 0;
+                                return `${hour.toString().padStart(2, "0")}:${m}`;
+                            })()}
+                            onChange={(e) => {
+                                const time = e.target.value;
+                                if (!time) return;
+                                const [hStr, mStr] = time.split(":");
+                                const hour = parseInt(hStr, 10);
+                                const period = hour >= 12 ? "PM" : "AM";
+                                const formattedHour = hour % 12 || 12;
+                                setForm((p) => ({ ...p, time_slot: `${formattedHour}:${mStr} ${period}` }));
+                            }}
                         />
                     </div>
                     <div>
@@ -529,13 +548,25 @@ function CreateModal({
                             <input
                                 type="time"
                                 className="input-field"
-                                value={form.time_slot.split(" ")[0]}
+                                value={(() => {
+                                    if (!form.time_slot) return "12:00";
+                                    const parts = form.time_slot.split(" ");
+                                    if (parts.length !== 2) return "";
+                                    const [t, p] = parts;
+                                    let [h, m] = t.split(":");
+                                    let hour = parseInt(h, 10);
+                                    if (p.toUpperCase() === "PM" && hour < 12) hour += 12;
+                                    if (p.toUpperCase() === "AM" && hour === 12) hour = 0;
+                                    return `${hour.toString().padStart(2, "0")}:${m}`;
+                                })()}
                                 onChange={(e) => {
                                     const time = e.target.value;
-                                    const hour = parseInt(time.split(":")[0]);
+                                    if (!time) return;
+                                    const [hStr, mStr] = time.split(":");
+                                    const hour = parseInt(hStr, 10);
                                     const period = hour >= 12 ? "PM" : "AM";
                                     const formattedHour = hour % 12 || 12;
-                                    setForm((p) => ({ ...p, time_slot: `${formattedHour}:${time.split(":")[1]} ${period}` }));
+                                    setForm((p) => ({ ...p, time_slot: `${formattedHour}:${mStr} ${period}` }));
                                 }}
                             />
                         </div>
