@@ -192,8 +192,8 @@ export function BookingForm({
                                 // Filter out same-day slots within 1 hour
                                 const isToday =
                                     formData.date &&
-                                    formData.date.toISOString().split("T")[0] ===
-                                    new Date().toISOString().split("T")[0];
+                                    formData.date.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }) ===
+                                    new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
                                 let tooSoon = false;
                                 if (isToday) {
                                     const [timePart, period] = slot.split(" ");

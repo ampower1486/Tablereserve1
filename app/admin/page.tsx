@@ -56,7 +56,7 @@ export default async function AdminPage({
     }
 
     const confirmedToday = reservations.filter((r) => {
-        const today = new Date().toISOString().split("T")[0];
+        const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
         return r.date === today && r.status === "confirmed";
     }).length;
 

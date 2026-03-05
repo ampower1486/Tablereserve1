@@ -475,7 +475,7 @@ function CreateModal({
 }) {
     const [form, setForm] = useState({
         restaurant_id: availableRestaurants[0]?.id || "",
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }),
         time_slot: "12:00 PM",
         party_size: "2",
         guest_name: "",

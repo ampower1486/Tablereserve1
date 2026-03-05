@@ -64,7 +64,7 @@ export async function createReservation(
         return { error: "Date and time slot are required" };
     }
 
-    const reservationDate = formData.date.toISOString().split("T")[0];
+    const reservationDate = formData.date.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
 
     // ── Per-slot capacity check ────────────────────────────────
     const { data: restaurantData } = await supabase

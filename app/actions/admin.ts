@@ -28,10 +28,10 @@ export async function getAllReservations(filter?: string) {
 
     if (filter) {
         if (filter === "today") {
-            const today = new Date().toISOString().split("T")[0];
+            const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
             query = query.eq("date", today);
         } else if (filter === "today_confirmed") {
-            const today = new Date().toISOString().split("T")[0];
+            const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
             query = query.eq("date", today).eq("status", "confirmed");
         } else if (filter !== "all") {
             query = query.eq("status", filter);
@@ -148,7 +148,7 @@ export async function createAdminReservation(data: {
 export async function getAdminStats() {
     const supabase = await createClient();
     const profile = await getMyProfile();
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
 
     const rid = profile?.restaurant_id;
 
