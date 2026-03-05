@@ -23,6 +23,7 @@ interface ReservationTableProps {
 }
 
 const STATUS_LABELS: Record<string, string> = {
+    pending: "Pending",
     confirmed: "Confirmed",
     cancelled: "Cancelled",
     completed: "Completed",
@@ -95,7 +96,7 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
             {/* Filter tabs */}
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
                 <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
-                    {["all", "confirmed", "completed", "cancelled", "no_show"].map((f) => (
+                    {["all", "pending", "confirmed", "completed", "cancelled", "no_show"].map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
@@ -215,6 +216,12 @@ function ReservationCard({
         setIsUpdating(false);
     };
 
+    const handleUnconfirm = async () => {
+        setIsUpdating(true);
+        await onUpdateStatus("pending");
+        setIsUpdating(false);
+    };
+
     return (
         <div className={`card p-4 hover:shadow-md transition-shadow ${isConfirmed ? "bg-green-50/50 border border-green-200" : ""}`}>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -246,22 +253,29 @@ function ReservationCard({
                     </div>
                 </div>
 
-                {/* Quick Confirm Button */}
+                {/* Quick Confirm / Unconfirm Button */}
                 <div className="flex items-center justify-center px-4 shrink-0 border-l border-r border-gray-100 sm:mx-2 py-2 sm:py-0">
-                    <button
-                        onClick={handleConfirm}
-                        disabled={isUpdating || isConfirmed}
-                        className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-xs font-bold border shadow-sm
-                            ${isConfirmed
-                                ? "bg-green-500 text-white border-green-500"
-                                : "bg-white text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
-                            }
-                        `}
-                        title="Confirm reservation"
-                    >
-                        {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <div className={`w-4 h-4 rounded-full flex items-center justify-center ${isConfirmed ? "bg-white text-green-500" : "bg-green-600 text-white"}`}><Check className="w-3 h-3" /></div>}
-                        <span>{isConfirmed ? "Confirmed" : "Confirm"}</span>
-                    </button>
+                    {!isConfirmed ? (
+                        <button
+                            onClick={handleConfirm}
+                            disabled={isUpdating}
+                            className="px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-xs font-bold border shadow-sm bg-white text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
+                            title="Confirm reservation"
+                        >
+                            {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-600 text-white"><Check className="w-3 h-3" /></div>}
+                            <span>Confirm</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleUnconfirm}
+                            disabled={isUpdating}
+                            className="px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-xs font-bold border shadow-sm bg-green-500 text-white border-green-500 hover:bg-green-600"
+                            title="Unconfirm reservation"
+                        >
+                            {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <div className="w-4 h-4 rounded-full flex items-center justify-center bg-white text-green-500"><X className="w-3 h-3" /></div>}
+                            <span>Unconfirm</span>
+                        </button>
+                    )}
                 </div>
 
                 {/* Booking details */}
@@ -336,6 +350,7 @@ function ReservationCard({
 
 function StatusBadge({ status }: { status: string }) {
     const classes: Record<string, string> = {
+        pending: "badge-pending",
         confirmed: "badge-confirmed",
         cancelled: "badge-cancelled",
         completed: "badge-completed",
@@ -449,8 +464,9 @@ function EditModal({
                         <select
                             className="input-field"
                             value={form.status}
-                            onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as "confirmed" | "cancelled" | "completed" | "no_show" }))}
+                            onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as "pending" | "confirmed" | "cancelled" | "completed" | "no_show" }))}
                         >
+                            <option value="pending">Pending</option>
                             <option value="confirmed">Confirmed</option>
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>

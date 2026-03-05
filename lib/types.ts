@@ -9,7 +9,7 @@ export type Reservation = {
     date: string;
     time_slot: string;
     party_size: number;
-    status: "confirmed" | "cancelled" | "completed" | "no_show";
+    status: "pending" | "confirmed" | "cancelled" | "completed" | "no_show";
     notes: string | null;
     created_at: string;
     updated_at: string;
