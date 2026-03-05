@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
                     id: data.user.id,
                     full_name: data.user.user_metadata.full_name || data.user.email?.split("@")[0] || "Guest",
                     role: "customer",
+                    email: data.user.email,
                 });
             } else if ((profile.role === "admin" || profile.role === "super_admin") && next === "/") {
                 targetUrl = `${origin}/admin`;

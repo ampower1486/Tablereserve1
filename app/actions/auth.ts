@@ -100,6 +100,7 @@ export async function signUp(formData: FormData) {
             full_name: fullName,
             phone,
             role: "customer",
+            email: user.email,
         });
     }
 
