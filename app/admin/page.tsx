@@ -35,7 +35,7 @@ export default async function AdminPage({
         restaurantName = restaurant?.name ?? null;
     }
 
-    const isSuperAdmin = profile.role === "super_admin";
+    const isSuperAdmin = profile.role === "super_admin" || (profile.role === "admin" && !profile.restaurant_id);
 
     const [reservations, stats] = await Promise.all([
         getAllReservations(filterParam),

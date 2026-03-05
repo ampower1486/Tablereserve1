@@ -16,11 +16,13 @@ export default async function RestaurantsAdminPage() {
     // Verify admin role
     const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role, restaurant_id")
         .eq("id", user.id)
         .single();
 
-    if (!profile || (profile.role !== "admin" && profile.role !== "super_admin")) redirect("/");
+    const isSuperAdmin = profile?.role === "super_admin" || (profile?.role === "admin" && !profile.restaurant_id);
+
+    if (!profile || !isSuperAdmin) redirect("/admin");
 
     const restaurants = await getRestaurants();
 

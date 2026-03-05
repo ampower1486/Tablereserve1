@@ -11,7 +11,7 @@ export default async function AdminCalendarPage() {
     const profile = await getMyProfile();
     if (!profile || (profile.role !== "admin" && profile.role !== "super_admin")) redirect("/");
 
-    const isSuperAdmin = profile.role === "super_admin";
+    const isSuperAdmin = profile.role === "super_admin" || (profile.role === "admin" && !profile.restaurant_id);
 
     // If restaurant-scoped, fetch that restaurant's name
     let restaurantName: string | null = null;
