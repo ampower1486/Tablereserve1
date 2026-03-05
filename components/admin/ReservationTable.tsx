@@ -13,6 +13,7 @@ import {
     Plus,
     Loader2,
     AlertTriangle,
+    Check,
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
@@ -155,6 +156,9 @@ export function ReservationTable({ initialReservations, availableRestaurants }: 
                             onEdit={() => setEditingId(res.id)}
                             onCancel={() => handleCancel(res.id)}
                             isCancelling={cancellingId === res.id}
+                            onUpdateStatus={async (status) => {
+                                await updateReservation(res.id, { status });
+                            }}
                         />
                     ))}
                 </div>
@@ -192,16 +196,27 @@ function ReservationCard({
     onEdit,
     onCancel,
     isCancelling,
+    onUpdateStatus,
 }: {
     reservation: Reservation;
     onEdit: () => void;
     onCancel: () => void;
     isCancelling: boolean;
+    onUpdateStatus: (status: string) => Promise<void>;
 }) {
     const [showConfirm, setShowConfirm] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const isConfirmed = reservation.status === "confirmed";
+
+    const handleConfirm = async () => {
+        setIsUpdating(true);
+        await onUpdateStatus("confirmed");
+        setIsUpdating(false);
+    };
 
     return (
-        <div className="card p-4 hover:shadow-md transition-shadow">
+        <div className={`card p-4 hover:shadow-md transition-shadow ${isConfirmed ? "bg-green-50/50 border border-green-200" : ""}`}>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 {/* Code + Status */}
                 <div className="flex items-center gap-3 sm:w-32">
@@ -231,8 +246,26 @@ function ReservationCard({
                     </div>
                 </div>
 
+                {/* Quick Confirm Button */}
+                <div className="flex items-center justify-center px-4 shrink-0 border-l border-r border-gray-100 sm:mx-2 py-2 sm:py-0">
+                    <button
+                        onClick={handleConfirm}
+                        disabled={isUpdating || isConfirmed}
+                        className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-xs font-bold border shadow-sm
+                            ${isConfirmed
+                                ? "bg-green-500 text-white border-green-500"
+                                : "bg-white text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
+                            }
+                        `}
+                        title="Confirm reservation"
+                    >
+                        {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <div className={`w-4 h-4 rounded-full flex items-center justify-center ${isConfirmed ? "bg-white text-green-500" : "bg-green-600 text-white"}`}><Check className="w-3 h-3" /></div>}
+                        <span>{isConfirmed ? "Confirmed" : "Confirm"}</span>
+                    </button>
+                </div>
+
                 {/* Booking details */}
-                <div className="flex items-center gap-4 text-xs text-gray-600 flex-wrap">
+                <div className="flex items-center gap-4 text-xs text-gray-600 flex-wrap shrink-0">
                     <div className="flex items-center gap-1">
                         <CalendarDays className="w-3.5 h-3.5 text-carmelita-red" />
                         {format(parseISO(reservation.date), "MMM d, yyyy")}
