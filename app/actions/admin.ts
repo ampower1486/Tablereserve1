@@ -211,7 +211,7 @@ export async function getAllUsers() {
     const supabase = await createClient();
     const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, role, restaurant_id, email")
+        .select("id, full_name, role, restaurant_id")
         .order("role")
         .order("full_name");
     if (error) return [];
