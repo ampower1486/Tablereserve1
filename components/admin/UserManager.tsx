@@ -94,11 +94,11 @@ export function UserManager({
                                             <UserCog className="w-4 h-4 text-white" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="font-medium text-carmelita-dark text-sm truncate flex items-center gap-2">
+                                            <p className="font-medium text-carmelita-dark text-sm truncate">
                                                 {user.full_name || "Unnamed"}
-                                                {user.email && (
-                                                    <span className="text-xs text-gray-500 font-normal">({user.email})</span>
-                                                )}
+                                            </p>
+                                            <p className="text-xs text-gray-500 truncate mt-0.5">
+                                                {user.email || "No email available"}
                                             </p>
                                             <p className="text-xs text-gray-400 mt-0.5">
                                                 {user.restaurant_id
@@ -172,11 +172,11 @@ export function UserManager({
                                         <UserCog className="w-4 h-4 text-gray-500" />
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="font-medium text-gray-700 text-sm truncate flex items-center gap-2">
+                                        <p className="font-medium text-gray-700 text-sm truncate">
                                             {user.full_name || "Unnamed user"}
-                                            {user.email && (
-                                                <span className="text-xs text-gray-500 font-normal">({user.email})</span>
-                                            )}
+                                        </p>
+                                        <p className="text-xs text-gray-500 truncate mt-0.5">
+                                            {user.email || "No email available"}
                                         </p>
                                     </div>
                                 </div>
