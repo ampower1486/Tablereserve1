@@ -18,7 +18,9 @@ export default async function AdminUsersPage() {
         .eq("id", user.id)
         .single();
 
-    if (!profile || (profile.role !== "admin" && profile.role !== "super_admin") || profile.restaurant_id !== null) {
+    const isSuperAdmin = profile?.role === "super_admin" || (profile?.role === "admin" && !profile.restaurant_id);
+
+    if (!profile || !isSuperAdmin) {
         redirect("/admin");
     }
 
